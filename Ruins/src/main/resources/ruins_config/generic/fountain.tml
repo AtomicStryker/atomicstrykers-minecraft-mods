@@ -41,7 +41,7 @@ random_height_offset=0,0
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=7,9,9
@@ -77,14 +77,14 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{snowy:"false"},Name:"minecraft:grass_block"}
-rule2=0,100,{Name:"minecraft:gravel"}
-rule3=0,100,{Name:"minecraft:glowstone"}
-rule4=0,100,{Name:"minecraft:mossy_stone_bricks"}
-rule5=0,100,{Name:"minecraft:stone_bricks"}
-rule6=0,100,{Properties:{level:"1"},Name:"minecraft:water"}
-rule7=0,100,{Properties:{level:"8"},Name:"minecraft:water"}
-rule8=0,100,{Properties:{level:"0"},Name:"minecraft:water"}
+rule1=0,100,{Properties:{snowy:"false"},id:"minecraft:grass_block"}
+rule2=0,100,{id:"minecraft:gravel"}
+rule3=0,100,{id:"minecraft:glowstone"}
+rule4=0,100,{id:"minecraft:mossy_stone_bricks"}
+rule5=0,100,{id:"minecraft:stone_bricks"}
+rule6=0,100,{Properties:{level:"1"},id:"minecraft:water"}
+rule7=0,100,{Properties:{level:"8"},id:"minecraft:water"}
+rule8=0,100,{Properties:{level:"0"},id:"minecraft:water"}
 
 layer
 0,0,0,1,1,1,0,1,1

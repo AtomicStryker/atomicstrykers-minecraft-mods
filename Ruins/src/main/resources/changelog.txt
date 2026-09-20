@@ -669,3 +669,5 @@ a: setAccessible now true
 
 26.3.1
 + updated for MC 26.3 and Forge 66.0.2
++ note: Minecraft json/nbt api has changed, Name became id, custom templates needs converting
++ example: {Name:"minecraft:blue_wool"} becomes {id:"minecraft:blue_wool"}

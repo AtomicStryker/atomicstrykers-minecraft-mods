@@ -818,6 +818,23 @@ public class RuinTemplate {
         return acceptedDimensions.isEmpty() || dimension != null && !dimension.isEmpty() && acceptedDimensions.contains(dimension);
     }
 
+    /**
+     * do a sanity check on a loaded ruin, there must be at least one non air block otherwise something went wrong parsing
+     */
+    public boolean isValid() {
+        for (VariantRuleset.VariantGroup variantGroup : variantRuleset.variantGroups) {
+            for (VariantRuleset.VariantGroup.VariantRule variantRule : variantGroup.variantRules) {
+                for (RuinTemplateRule variant : variantRule.variants) {
+                    if (!variant.isAllAirBlocks()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        RuinsMod.LOGGER.error("{} parsed as air blocks only, problem with template or parser", this);
+        return false;
+    }
+
     private enum ParserState {PRE_RULE_PHASE, RULE_PHASE, POST_RULE_PHASE}
 
     public static class IncompatibleModException extends RuntimeException {

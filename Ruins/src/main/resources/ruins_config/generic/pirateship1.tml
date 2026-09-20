@@ -40,8 +40,8 @@ random_height_offset=-2,0
 # whitelist/blacklist of block states on which template may be built
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
-acceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"}
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:lava"}
+acceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=18,11,33
@@ -77,58 +77,58 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{axis:"z"},Name:"minecraft:oak_log"}
-rule2=0,100,{Properties:{axis:"y"},Name:"minecraft:oak_log"}
-rule3=0,100,{Name:"minecraft:oak_planks"}
-rule4=0,100,{Properties:{part:"head",facing:"west",occupied:"false"},Name:"minecraft:red_bed"}
-rule5=0,100,{Properties:{waterlogged:"false",facing:"south",type:"single"},Name:"minecraft:chest"}
-rule6=0,100,{Properties:{part:"foot",facing:"west",occupied:"false"},Name:"minecraft:red_bed"}
-rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:skeleton"}}}]}}, Name:"minecraft:spawner"}
-rule8=0,100,{Properties:{part:"foot",facing:"east",occupied:"false"},Name:"minecraft:red_bed"}
-rule9=0,100,{Properties:{part:"head",facing:"east",occupied:"false"},Name:"minecraft:red_bed"}
-rule10=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",facing:"south"},Name:"minecraft:oak_stairs"}
-rule11=0,100,{Properties:{waterlogged:"false",facing:"west"},Name:"minecraft:ladder"}
-rule12=0,100,{Properties:{triggered:"false",facing:"west"},Name:"minecraft:dispenser"}
-rule13=0,100,{Properties:{triggered:"false",facing:"east"},Name:"minecraft:dispenser"}
-rule14=0,100,{Properties:{waterlogged:"false",facing:"east"},Name:"minecraft:ladder"}
-rule15=0,100,{Properties:{facing:"up",open:"false"},Name:"minecraft:barrel"}
-rule16=0,100,{Properties:{unstable:"false"},Name:"minecraft:tnt"}
-rule17=0,100,{Properties:{facing:"east",open:"false"},Name:"minecraft:barrel"}
-rule18=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4494073760638859517L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
-rule19=0,100,{Properties:{waterlogged:"false",type:"bottom"},Name:"minecraft:oak_slab"}
-rule20=0,100,{Properties:{hinge:"right",half:"lower",powered:"false",facing:"west",open:"false"},Name:"minecraft:oak_door"}
-rule21=0,100,{Name:"minecraft:obsidian"}
-rule22=0,100,{Properties:{facing:"north",open:"false"},Name:"minecraft:barrel"}
-rule23=0,100,{Properties:{facing:"north"},Name:"minecraft:wither_skeleton_wall_skull"}
-rule24=0,100,{Properties:{facing:"west",open:"false"},Name:"minecraft:barrel"}
-rule25=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule26=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule27=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule28=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule29=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule30=0,100,{Properties:{waterlogged:"false",type:"top"},Name:"minecraft:oak_slab"}
-rule31=0,100,{Properties:{hinge:"right",half:"upper",powered:"false",facing:"west",open:"false"},Name:"minecraft:oak_door"}
-rule32=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule33=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"true"},Name:"minecraft:oak_fence"}
-rule34=0,100,{Name:"minecraft:gold_block"}
-rule35=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule36=0,100,{Properties:{rotation:"14"},Name:"minecraft:skeleton_skull"}
-rule37=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule38=0,100,{Properties:{rotation:"1"},Name:"minecraft:skeleton_skull"}
-rule39=0,100,{Properties:{waterlogged:"false",type:"double"},Name:"minecraft:oak_slab"}
-rule40=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule41=0,100,{Properties:{axis:"x"},Name:"minecraft:oak_log"}
-rule42=0,100,{Name:"minecraft:white_wool"}
-rule43=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule44=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"true",west:"true"},Name:"minecraft:oak_fence"}
-rule45=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule46=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"true"},Name:"minecraft:oak_fence"}
-rule47=0,100,{Properties:{rotation:"0"},Name:"minecraft:skeleton_skull"}
-rule48=0,100,{Properties:{face:"floor",facing:"east"},Name:"minecraft:grindstone"}
-rule49=2*0,100,{Name:"minecraft:black_wool"}
-^0,100,{Name:"minecraft:green_wool"}
-^0,100,{Name:"minecraft:red_wool"}
-rule50=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:zombie"}}}]}}, Name:"minecraft:spawner"}
+rule1=0,100,{Properties:{axis:"z"},id:"minecraft:oak_log"}
+rule2=0,100,{Properties:{axis:"y"},id:"minecraft:oak_log"}
+rule3=0,100,{id:"minecraft:oak_planks"}
+rule4=0,100,{Properties:{part:"head",facing:"west",occupied:"false"},id:"minecraft:red_bed"}
+rule5=0,100,{Properties:{waterlogged:"false",facing:"south",type:"single"},id:"minecraft:chest"}
+rule6=0,100,{Properties:{part:"foot",facing:"west",occupied:"false"},id:"minecraft:red_bed"}
+rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:skeleton"}}}]}}, id:"minecraft:spawner"}
+rule8=0,100,{Properties:{part:"foot",facing:"east",occupied:"false"},id:"minecraft:red_bed"}
+rule9=0,100,{Properties:{part:"head",facing:"east",occupied:"false"},id:"minecraft:red_bed"}
+rule10=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",facing:"south"},id:"minecraft:oak_stairs"}
+rule11=0,100,{Properties:{waterlogged:"false",facing:"west"},id:"minecraft:ladder"}
+rule12=0,100,{Properties:{triggered:"false",facing:"west"},id:"minecraft:dispenser"}
+rule13=0,100,{Properties:{triggered:"false",facing:"east"},id:"minecraft:dispenser"}
+rule14=0,100,{Properties:{waterlogged:"false",facing:"east"},id:"minecraft:ladder"}
+rule15=0,100,{Properties:{facing:"up",open:"false"},id:"minecraft:barrel"}
+rule16=0,100,{Properties:{unstable:"false"},id:"minecraft:tnt"}
+rule17=0,100,{Properties:{facing:"east",open:"false"},id:"minecraft:barrel"}
+rule18=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4494073760638859517L}},Properties:{waterlogged:"false",facing:north,type:"single"},id:"minecraft:trapped_chest"}
+rule19=0,100,{Properties:{waterlogged:"false",type:"bottom"},id:"minecraft:oak_slab"}
+rule20=0,100,{Properties:{hinge:"right",half:"lower",powered:"false",facing:"west",open:"false"},id:"minecraft:oak_door"}
+rule21=0,100,{id:"minecraft:obsidian"}
+rule22=0,100,{Properties:{facing:"north",open:"false"},id:"minecraft:barrel"}
+rule23=0,100,{Properties:{facing:"north"},id:"minecraft:wither_skeleton_wall_skull"}
+rule24=0,100,{Properties:{facing:"west",open:"false"},id:"minecraft:barrel"}
+rule25=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},id:"minecraft:oak_fence"}
+rule26=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"false"},id:"minecraft:oak_fence"}
+rule27=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"false"},id:"minecraft:oak_fence"}
+rule28=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"false"},id:"minecraft:oak_fence"}
+rule29=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},id:"minecraft:oak_fence"}
+rule30=0,100,{Properties:{waterlogged:"false",type:"top"},id:"minecraft:oak_slab"}
+rule31=0,100,{Properties:{hinge:"right",half:"upper",powered:"false",facing:"west",open:"false"},id:"minecraft:oak_door"}
+rule32=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"false",west:"false"},id:"minecraft:oak_fence"}
+rule33=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"true"},id:"minecraft:oak_fence"}
+rule34=0,100,{id:"minecraft:gold_block"}
+rule35=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"true"},id:"minecraft:oak_fence"}
+rule36=0,100,{Properties:{rotation:"14"},id:"minecraft:skeleton_skull"}
+rule37=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"true"},id:"minecraft:oak_fence"}
+rule38=0,100,{Properties:{rotation:"1"},id:"minecraft:skeleton_skull"}
+rule39=0,100,{Properties:{waterlogged:"false",type:"double"},id:"minecraft:oak_slab"}
+rule40=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"false",west:"true"},id:"minecraft:oak_fence"}
+rule41=0,100,{Properties:{axis:"x"},id:"minecraft:oak_log"}
+rule42=0,100,{id:"minecraft:white_wool"}
+rule43=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"false"},id:"minecraft:oak_fence"}
+rule44=0,100,{Properties:{east:"true",waterlogged:"false",south:"true",north:"true",west:"true"},id:"minecraft:oak_fence"}
+rule45=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},id:"minecraft:oak_fence"}
+rule46=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"true"},id:"minecraft:oak_fence"}
+rule47=0,100,{Properties:{rotation:"0"},id:"minecraft:skeleton_skull"}
+rule48=0,100,{Properties:{face:"floor",facing:"east"},id:"minecraft:grindstone"}
+rule49=2*0,100,{id:"minecraft:black_wool"}
+^0,100,{id:"minecraft:green_wool"}
+^0,100,{id:"minecraft:red_wool"}
+rule50=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:zombie"}}}]}}, id:"minecraft:spawner"}
 
 layer
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

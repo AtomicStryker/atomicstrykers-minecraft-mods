@@ -41,7 +41,7 @@ random_height_offset=0,0
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=3,6,6
@@ -77,17 +77,17 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{snowy:"false"},Name:"minecraft:grass_block"}
-rule2=0,100,{Properties:{moisture:"7"},Name:"minecraft:farmland"}
-rule3=0,100,{Properties:{level:"0"},Name:"minecraft:water"}
-rule4=0,100,{Properties:{snowy:"false"},Name:"minecraft:podzol"}
-rule5=0,100,{Properties:{half:"lower"},Name:"minecraft:tall_grass"}
-rule6=0,100,{Name:"minecraft:lily_pad"}
-rule7=0,100,{Properties:{age:"0"},Name:"minecraft:pumpkin_stem"}
-rule8=0,100,{Properties:{age:"0"},Name:"minecraft:sugar_cane"}
-rule9=0,100,{Properties:{age:"1"},Name:"minecraft:melon_stem"}
-rule10=0,100,{Properties:{age:"0"},Name:"minecraft:melon_stem"}
-rule11=0,100,{Properties:{half:"upper"},Name:"minecraft:tall_grass"}
+rule1=0,100,{Properties:{snowy:"false"},id:"minecraft:grass_block"}
+rule2=0,100,{Properties:{moisture:"7"},id:"minecraft:farmland"}
+rule3=0,100,{Properties:{level:"0"},id:"minecraft:water"}
+rule4=0,100,{Properties:{snowy:"false"},id:"minecraft:podzol"}
+rule5=0,100,{Properties:{half:"lower"},id:"minecraft:tall_grass"}
+rule6=0,100,{id:"minecraft:lily_pad"}
+rule7=0,100,{Properties:{age:"0"},id:"minecraft:pumpkin_stem"}
+rule8=0,100,{Properties:{age:"0"},id:"minecraft:sugar_cane"}
+rule9=0,100,{Properties:{age:"1"},id:"minecraft:melon_stem"}
+rule10=0,100,{Properties:{age:"0"},id:"minecraft:melon_stem"}
+rule11=0,100,{Properties:{half:"upper"},id:"minecraft:tall_grass"}
 
 layer
 1,0,1,0,1,0

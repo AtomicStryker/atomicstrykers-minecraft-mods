@@ -41,7 +41,7 @@ random_height_offset=0,0
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=4,10,11
@@ -77,22 +77,22 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Name:"minecraft:oak_fence"}
-rule2=0,100,{Properties:{axis:"x"},Name:"minecraft:hay_block"}
-rule3=0,100,{Properties:{axis:"y"},Name:"minecraft:hay_block"}
-rule4=0,100,{Properties:{facing:"up",open:"false"},Name:"minecraft:barrel"}
-rule5=0,100,{Properties:{facing:"north",open:"false"},Name:"minecraft:barrel"}
-rule6=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:zombie"}}}]}}, Name:"minecraft:spawner"}
-rule8=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4455573760637359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
-rule9=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule10=0,100,{Properties:{rotation:"1"},Name:"minecraft:zombie_head"}
-rule11=0,100,{Properties:{rotation:"15"},Name:"minecraft:zombie_head"}
-rule12=0,100,{Properties:{rotation:"7"},Name:"minecraft:zombie_head"}
-rule13=0,100,{Properties:{rotation:"14"},Name:"minecraft:zombie_head"}
-rule14=0,100,{Properties:{rotation:"4"},Name:"minecraft:zombie_head"}
-rule15=0,100,{Properties:{rotation:"2"},Name:"minecraft:zombie_head"}
-rule16=0,100,{Properties:{axis:"z"},Name:"minecraft:hay_block"}
+rule1=0,100,{id:"minecraft:oak_fence"}
+rule2=0,100,{Properties:{axis:"x"},id:"minecraft:hay_block"}
+rule3=0,100,{Properties:{axis:"y"},id:"minecraft:hay_block"}
+rule4=0,100,{Properties:{facing:"up",open:"false"},id:"minecraft:barrel"}
+rule5=0,100,{Properties:{facing:"north",open:"false"},id:"minecraft:barrel"}
+rule6=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},id:"minecraft:oak_fence"}
+rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:zombie"}}}]}}, id:"minecraft:spawner"}
+rule8=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4455573760637359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},id:"minecraft:trapped_chest"}
+rule9=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},id:"minecraft:oak_fence"}
+rule10=0,100,{Properties:{rotation:"1"},id:"minecraft:zombie_head"}
+rule11=0,100,{Properties:{rotation:"15"},id:"minecraft:zombie_head"}
+rule12=0,100,{Properties:{rotation:"7"},id:"minecraft:zombie_head"}
+rule13=0,100,{Properties:{rotation:"14"},id:"minecraft:zombie_head"}
+rule14=0,100,{Properties:{rotation:"4"},id:"minecraft:zombie_head"}
+rule15=0,100,{Properties:{rotation:"2"},id:"minecraft:zombie_head"}
+rule16=0,100,{Properties:{axis:"z"},id:"minecraft:hay_block"}
 
 layer
 0,0,0,0,0,0,0,1,0,0,0

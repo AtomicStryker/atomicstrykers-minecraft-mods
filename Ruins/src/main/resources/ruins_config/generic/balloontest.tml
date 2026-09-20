@@ -41,7 +41,7 @@ random_height_offset=0,30
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=28,5,5
@@ -77,22 +77,22 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Name:"minecraft:oak_fence"}
-rule2=0,100,{Name:"minecraft:oak_fence"}
-rule3=0,100,{Properties:{axis:"x"},Name:"minecraft:jungle_log"}
-rule4=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"true"},Name:"minecraft:oak_fence"}
-rule5=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule6=0,100,{Properties:{axis:"y"},Name:"minecraft:jungle_log"}
-rule7=0,100,{Properties:{axis:"z"},Name:"minecraft:jungle_log"}
-rule8=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule9=0,100,{Name:"minecraft:white_wool"}
-rule10=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule11=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4494073760127359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:trapped_chest"}
-rule12=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule13=2*0,100,{Name:"minecraft:blue_wool"}
-^0,100,{Name:"minecraft:green_wool"}
-^0,100,{Name:"minecraft:orange_wool"}
-rule14=0,100,{Properties:{unstable:"false"},Name:"minecraft:tnt"}
+rule1=0,100,{id:"minecraft:oak_fence"}
+rule2=0,100,{id:"minecraft:oak_fence"}
+rule3=0,100,{Properties:{axis:"x"},id:"minecraft:jungle_log"}
+rule4=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"true"},id:"minecraft:oak_fence"}
+rule5=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"true"},id:"minecraft:oak_fence"}
+rule6=0,100,{Properties:{axis:"y"},id:"minecraft:jungle_log"}
+rule7=0,100,{Properties:{axis:"z"},id:"minecraft:jungle_log"}
+rule8=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},id:"minecraft:oak_fence"}
+rule9=0,100,{id:"minecraft:white_wool"}
+rule10=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"true",west:"false"},id:"minecraft:oak_fence"}
+rule11=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4494073760127359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},id:"minecraft:trapped_chest"}
+rule12=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"false",west:"true"},id:"minecraft:oak_fence"}
+rule13=2*0,100,{id:"minecraft:blue_wool"}
+^0,100,{id:"minecraft:green_wool"}
+^0,100,{id:"minecraft:orange_wool"}
+rule14=0,100,{Properties:{unstable:"false"},id:"minecraft:tnt"}
 
 layer
 0,0,0,0,0

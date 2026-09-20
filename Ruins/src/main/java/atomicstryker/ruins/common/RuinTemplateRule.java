@@ -157,6 +157,18 @@ public class RuinTemplateRule {
         handleBlockSpawning(world, random, pos, blocknum, rotate);
     }
 
+    /**
+     * sanity check ensuring a rule does not resolve to air only, which indicates a template or parser problem
+     */
+    public boolean isAllAirBlocks() {
+        for (BlockState blockState : blockStates) {
+            if (blockState != null && !blockState.isAir()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void handleBlockSpawning(Level world, RandomSource random, BlockPos pos, int blocknum, int rotate) {
         BlockState blockState = blockStates[blocknum];
         if (blockState != null) {
