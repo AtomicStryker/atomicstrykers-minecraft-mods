@@ -44,7 +44,7 @@ public class FinderCompassLogic {
                 return;
             }
 
-            BlockPos pos = new BlockPos(mc.player.getOnPos());
+            BlockPos pos = mc.player.getOnPos();
             if (!pos.equals(oldPos)) {
                 oldPos = pos;
                 movement = true;
