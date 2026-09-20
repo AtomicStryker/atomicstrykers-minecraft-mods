@@ -189,11 +189,11 @@ public class RuinsMod {
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (event.getEntity().level() instanceof ServerLevel) {
             WorldHandle wh = getInstance().getWorldHandle((ServerLevel) event.getEntity().level());
-            if (wh != null && wh.fileHandle.enableStick) {
+            if (wh != null && wh.fileHandle.enableStick && event.getPosition() != null) {
                 ItemStack is = event.getEntity().getMainHandItem();
                 if (is.getItem() == Items.STICK && System.currentTimeMillis() > getInstance().nextInfoTime) {
                     getInstance().nextInfoTime = System.currentTimeMillis() + 1000L;
-                    BlockEntity te = event.getEntity().level().getBlockEntity(event.getPosition().get());
+                    BlockEntity te = event.getEntity().level().getBlockEntity(event.getPosition());
                     event.getEntity().sendSystemMessage(Component.literal(RuleStringNbtHelper.StringFromBlockState(event.getState(), te)));
                 }
             }

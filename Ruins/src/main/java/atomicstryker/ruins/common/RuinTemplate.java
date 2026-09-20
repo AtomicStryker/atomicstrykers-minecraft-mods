@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.ModList;
@@ -358,8 +359,9 @@ public class RuinTemplate {
                 int count = bonemealMarker.getCount();
                 BonemealableBlock igrowable = (BonemealableBlock) growable;
                 int grows;
-                for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state); ++grows) {
-                    igrowable.performBonemeal((ServerLevel) world, world.getRandom(), position, state);
+                BonemealSource bonemealSource = BonemealSource.INTERACTION;
+                for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state, bonemealSource); ++grows) {
+                    igrowable.performBonemeal((ServerLevel) world, world.getRandom(), position, state, bonemealSource);
                     state = world.getBlockState(position);
                     growable = state.getBlock();
                     if (growable instanceof BonemealableBlock) {
@@ -780,12 +782,12 @@ public class RuinTemplate {
         private final int count_;
 
         public BonemealMarker(BlockPos position, int count) {
-            position_ = new BlockPos(position);
+            position_ = position;
             count_ = count;
         }
 
         public BlockPos getPosition() {
-            return new BlockPos(position_);
+            return position_;
         }
 
         public int getCount() {
