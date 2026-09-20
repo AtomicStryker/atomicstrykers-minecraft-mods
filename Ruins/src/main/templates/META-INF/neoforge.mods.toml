@@ -20,7 +20,7 @@ displayName="${mod_name}" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://atomicstryker.github.io/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="logo.png" #optional
+bannerFile="logo.png" #optional
 # A text field displayed in the mod UI
 # credits="" #optional
 # A text field displayed in the mod UI

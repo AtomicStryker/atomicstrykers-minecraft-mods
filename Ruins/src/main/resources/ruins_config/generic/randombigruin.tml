@@ -41,7 +41,7 @@ random_height_offset=0,0
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=13,23,22
@@ -77,13 +77,13 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Name:"minecraft:stone_bricks"}
-rule2=0,100,{Name:"minecraft:cracked_stone_bricks"}
-rule3=0,100,{Name:"minecraft:mossy_stone_bricks"}
-rule4=0,100,{Name:"minecraft:dirt"}
-rule5=0,100,{Properties:{snowy:"false"},Name:"minecraft:grass_block"}
-rule6=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4494073760637359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}{Ruins:{entity:{LootTable:"minecraft:chests/jungle_temple"}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/desert_pyramid"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},Name:"minecraft:chest"}
-rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:zombie"}}}]}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:skeleton"}}}]}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:spider"}}}]}}, Name:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:cave_spider"}}}]}}, Name:"minecraft:spawner"}
+rule1=0,100,{id:"minecraft:stone_bricks"}
+rule2=0,100,{id:"minecraft:cracked_stone_bricks"}
+rule3=0,100,{id:"minecraft:mossy_stone_bricks"}
+rule4=0,100,{id:"minecraft:dirt"}
+rule5=0,100,{Properties:{snowy:"false"},id:"minecraft:grass_block"}
+rule6=0,100,{Ruins:{entity:{LootTable:"minecraft:chests/simple_dungeon",LootTableSeed:-4494073760637359517L}},Properties:{waterlogged:"false",facing:north,type:"single"},id:"minecraft:chest"}{Ruins:{entity:{LootTable:"minecraft:chests/jungle_temple"}},Properties:{waterlogged:"false",facing:north,type:"single"},id:"minecraft:chest"}{Ruins:{entity:{ForgeData:{LootTable:"minecraft:chests/desert_pyramid"},Items:[],Lock:""}},Properties:{waterlogged:"false",facing:north,type:"single"},id:"minecraft:chest"}
+rule7=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:zombie"}}}]}}, id:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:skeleton"}}}]}}, id:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:spider"}}}]}}, id:"minecraft:spawner"}{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:cave_spider"}}}]}}, id:"minecraft:spawner"}
 
 layer
 0,0,2,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

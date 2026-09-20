@@ -41,7 +41,7 @@ random_height_offset=0,0
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=3,7,7
@@ -77,13 +77,13 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Name:"minecraft:oak_planks"}
-rule2=0,100,{Name:"minecraft:bookshelf"}
-rule3=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"true"},Name:"minecraft:oak_fence"}
-rule4=0,100,{Name:"minecraft:enchanting_table"}
-rule5=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule6=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},Name:"minecraft:oak_fence"}
-rule7=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
+rule1=0,100,{id:"minecraft:oak_planks"}
+rule2=0,100,{id:"minecraft:bookshelf"}
+rule3=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"true"},id:"minecraft:oak_fence"}
+rule4=0,100,{id:"minecraft:enchanting_table"}
+rule5=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"false"},id:"minecraft:oak_fence"}
+rule6=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"true",west:"false"},id:"minecraft:oak_fence"}
+rule7=0,100,{Properties:{east:"true",waterlogged:"false",south:"false",north:"false",west:"false"},id:"minecraft:oak_fence"}
 
 layer
 0,0,1,1,1,0,0

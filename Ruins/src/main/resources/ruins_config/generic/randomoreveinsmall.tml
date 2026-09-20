@@ -41,7 +41,7 @@ random_height_offset=0,0
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=7,9,11
@@ -77,9 +77,9 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Name:"minecraft:stone"}
-rule2=0,100,{Name:"minecraft:stone"},{Name:"minecraft:stone"},{Name:"minecraft:stone"},{Name:"minecraft:stone"},{Name:"minecraft:stone"},{Name:"minecraft:stone"},{Name:"minecraft:stone"},{Name:"minecraft:stone"},{Name:"minecraft:lapis_ore"},{Name:"minecraft:iron_ore"},{Name:"minecraft:gold_ore"},{Name:"minecraft:diamond_ore"}
-rule3=0,100,{Name:"minecraft:iron_ore"}
+rule1=0,100,{id:"minecraft:stone"}
+rule2=0,100,{id:"minecraft:stone"},{id:"minecraft:stone"},{id:"minecraft:stone"},{id:"minecraft:stone"},{id:"minecraft:stone"},{id:"minecraft:stone"},{id:"minecraft:stone"},{id:"minecraft:stone"},{id:"minecraft:lapis_ore"},{id:"minecraft:iron_ore"},{id:"minecraft:gold_ore"},{id:"minecraft:diamond_ore"}
+rule3=0,100,{id:"minecraft:iron_ore"}
 
 layer
 0,0,0,0,0,0,0,0,0,0,0

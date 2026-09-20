@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModList;
@@ -357,9 +358,10 @@ public class RuinTemplate {
             if (growable instanceof BonemealableBlock) {
                 int count = bonemealMarker.getCount();
                 BonemealableBlock igrowable = (BonemealableBlock) growable;
+                BonemealSource bonemealSource = BonemealSource.INTERACTION;
                 int grows;
-                for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state); ++grows) {
-                    igrowable.performBonemeal((ServerLevel) world, world.getRandom(), position, state);
+                for (grows = 0; grows < count && igrowable.isValidBonemealTarget(world, position, state, bonemealSource); ++grows) {
+                    igrowable.performBonemeal((ServerLevel) world, world.getRandom(), position, state, bonemealSource);
                     state = world.getBlockState(position);
                     growable = state.getBlock();
                     if (growable instanceof BonemealableBlock) {
@@ -781,12 +783,12 @@ public class RuinTemplate {
         private final int count_;
 
         public BonemealMarker(BlockPos position, int count) {
-            position_ = new BlockPos(position);
+            position_ = position;
             count_ = count;
         }
 
         public BlockPos getPosition() {
-            return new BlockPos(position_);
+            return position_;
         }
 
         public int getCount() {
@@ -815,6 +817,23 @@ public class RuinTemplate {
 
     public boolean acceptsDimension(final String dimension) {
         return acceptedDimensions.isEmpty() || dimension != null && !dimension.isEmpty() && acceptedDimensions.contains(dimension);
+    }
+
+    /**
+     * do a sanity check on a loaded ruin, there must be at least one non air block otherwise something went wrong parsing
+     */
+    public boolean isValid() {
+        for (VariantRuleset.VariantGroup variantGroup : variantRuleset.variantGroups) {
+            for (VariantRuleset.VariantGroup.VariantRule variantRule : variantGroup.variantRules) {
+                for (RuinTemplateRule variant : variantRule.variants) {
+                    if (!variant.isAllAirBlocks()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        RuinsMod.LOGGER.error("{} parsed as air blocks only, problem with template or parser", this);
+        return false;
     }
 
     private enum ParserState {PRE_RULE_PHASE, RULE_PHASE, POST_RULE_PHASE}

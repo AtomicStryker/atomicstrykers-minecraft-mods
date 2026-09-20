@@ -261,7 +261,7 @@ class FileHandler {
             for (File f : listFiles) {
                 try {
                     r = new RuinTemplate(f.getCanonicalPath(), f.getName());
-                    if (!r.acceptsDimension(dimensionName)) {
+                    if (!r.isValid() || !r.acceptsDimension(dimensionName)) {
                         continue;
                     }
                     targetList.add(r);

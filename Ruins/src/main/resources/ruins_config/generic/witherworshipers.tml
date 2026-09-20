@@ -41,7 +41,7 @@ random_height_offset=0,0
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=9,14,10
@@ -77,24 +77,24 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},Name:"minecraft:oak_fence"}
-rule2=0,100,{Name:"minecraft:obsidian"}
-rule3=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:evoker"}}}]}}, Name:"minecraft:spawner"}
-rule4=0,100,{Name:"minecraft:nether_bricks"}
-rule5=0,100,{Properties:{rotation:"12"},Name:"minecraft:skeleton_skull"}
-rule6=0,100,{Properties:{rotation:"9"},Name:"minecraft:skeleton_skull"}
-rule7=0,100,{Properties:{rotation:"11"},Name:"minecraft:skeleton_skull"}
-rule8=0,100,{Properties:{axis:"y"},Name:"minecraft:bone_block"}
-rule9=0,100,{Name:"minecraft:netherrack"}
-rule10=0,100,{Properties:{level:"8"},Name:"minecraft:lava"}
-rule11=0,100,{Name:"minecraft:soul_sand"}
-rule12=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"false"},Name:"minecraft:iron_bars"}
-rule13=0,100,{Properties:{east:"false",south:"false",north:"false",west:"false",up:"false",age:"0"},Name:"minecraft:fire"}
-rule14=0,100,{Properties:{level:"0"},Name:"minecraft:lava"}
-rule15=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"true"},Name:"minecraft:iron_bars"}
-rule16=0,100,{Properties:{rotation:"12"},Name:"minecraft:wither_skeleton_skull"}
-rule17=0,100,{Properties:{rotation:"13"},Name:"minecraft:wither_skeleton_skull"}
-rule18=0,100,{Properties:{east:"false",south:"false",north:"false",west:"false",up:"false",age:"3"},Name:"minecraft:fire"}
+rule1=0,100,{Properties:{east:"false",waterlogged:"false",south:"false",north:"false",west:"false"},id:"minecraft:oak_fence"}
+rule2=0,100,{id:"minecraft:obsidian"}
+rule3=0,100,{Ruins:{entity:{SpawnPotentials:[{weight:1,data:{entity:{id:"minecraft:evoker"}}}]}}, id:"minecraft:spawner"}
+rule4=0,100,{id:"minecraft:nether_bricks"}
+rule5=0,100,{Properties:{rotation:"12"},id:"minecraft:skeleton_skull"}
+rule6=0,100,{Properties:{rotation:"9"},id:"minecraft:skeleton_skull"}
+rule7=0,100,{Properties:{rotation:"11"},id:"minecraft:skeleton_skull"}
+rule8=0,100,{Properties:{axis:"y"},id:"minecraft:bone_block"}
+rule9=0,100,{id:"minecraft:netherrack"}
+rule10=0,100,{Properties:{level:"8"},id:"minecraft:lava"}
+rule11=0,100,{id:"minecraft:soul_sand"}
+rule12=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"false"},id:"minecraft:iron_bars"}
+rule13=0,100,{Properties:{east:"false",south:"false",north:"false",west:"false",up:"false",age:"0"},id:"minecraft:fire"}
+rule14=0,100,{Properties:{level:"0"},id:"minecraft:lava"}
+rule15=0,100,{Properties:{east:"false",waterlogged:"false",south:"true",north:"true",west:"true"},id:"minecraft:iron_bars"}
+rule16=0,100,{Properties:{rotation:"12"},id:"minecraft:wither_skeleton_skull"}
+rule17=0,100,{Properties:{rotation:"13"},id:"minecraft:wither_skeleton_skull"}
+rule18=0,100,{Properties:{east:"false",south:"false",north:"false",west:"false",up:"false",age:"3"},id:"minecraft:fire"}
 
 layer
 0,0,0,0,0,0,0,0,0,0

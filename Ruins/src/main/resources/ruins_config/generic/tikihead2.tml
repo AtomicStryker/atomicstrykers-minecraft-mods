@@ -41,7 +41,7 @@ random_height_offset=0,0
 # specify one, not both; leave the other empty (both empty = allow all)
 # CAUTION: THE DEFAULTS ONLY APPLY TO NON-FLOWING LAVA AND WATER VARIANTS)
 acceptable_target_blocks=
-unacceptable_target_blocks={Properties:{level:"0"},Name:"minecraft:water"},{Properties:{level:"0"},Name:"minecraft:lava"}
+unacceptable_target_blocks={Properties:{level:"0"},id:"minecraft:water"},{Properties:{level:"0"},id:"minecraft:lava"}
 #
 # size of template (#layers, #rows per layer, #blocks per row)
 dimensions=7,6,7
@@ -77,17 +77,17 @@ spawnMaxDistance=0
 # may be used more than once to specify multiple neighbors
 adjoining_template=
 
-rule1=0,100,{Name:"minecraft:stone_bricks"}
-rule2=0,100,{Name:"minecraft:mossy_stone_bricks"}
-rule3=0,100,{Name:"minecraft:netherrack"}
-rule4=0,100,{Name:"minecraft:cracked_stone_bricks"}
-rule5=0,100,{Properties:{rotation:"8"},Name:"minecraft:white_banner"}
-rule6=0,100,{Properties:{rotation:"7"},Name:"minecraft:white_banner"}
-rule7=0,100,{Properties:{east:"false",south:"false",north:"false",west:"false",up:"false",age:"3"},Name:"minecraft:fire"}
-rule8=0,100,{Name:"minecraft:gold_block"}
-rule9=0,100,{Properties:{waterlogged:"false",type:"top"},Name:"minecraft:stone_brick_slab"}
-rule10=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",facing:"south"},Name:"minecraft:stone_brick_stairs"}
-rule11=0,100,{Properties:{half:"top",waterlogged:"false",shape:"straight",facing:"south"},Name:"minecraft:stone_brick_stairs"}
+rule1=0,100,{id:"minecraft:stone_bricks"}
+rule2=0,100,{id:"minecraft:mossy_stone_bricks"}
+rule3=0,100,{id:"minecraft:netherrack"}
+rule4=0,100,{id:"minecraft:cracked_stone_bricks"}
+rule5=0,100,{Properties:{rotation:"8"},id:"minecraft:white_banner"}
+rule6=0,100,{Properties:{rotation:"7"},id:"minecraft:white_banner"}
+rule7=0,100,{Properties:{east:"false",south:"false",north:"false",west:"false",up:"false",age:"3"},id:"minecraft:fire"}
+rule8=0,100,{id:"minecraft:gold_block"}
+rule9=0,100,{Properties:{waterlogged:"false",type:"top"},id:"minecraft:stone_brick_slab"}
+rule10=0,100,{Properties:{half:"bottom",waterlogged:"false",shape:"straight",facing:"south"},id:"minecraft:stone_brick_stairs"}
+rule11=0,100,{Properties:{half:"top",waterlogged:"false",shape:"straight",facing:"south"},id:"minecraft:stone_brick_stairs"}
 
 layer
 0,0,0,0,0,0,0
