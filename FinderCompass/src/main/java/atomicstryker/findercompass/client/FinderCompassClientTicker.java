@@ -55,7 +55,7 @@ public class FinderCompassClientTicker {
                     if (!repeat) {
                         repeat = true;
                         switchSetting();
-                        tick.player().level().playSound(null, new BlockPos(tick.player().getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
+                        tick.player().level().playSound(null, tick.player().getOnPos(), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
                     }
                 } else {
                     repeat = false;
@@ -90,7 +90,7 @@ public class FinderCompassClientTicker {
         FinderCompassLogic.hasFeature = false;
 
         if (mc.level != null && mc.player != null) {
-            mc.level.playSound(null, new BlockPos(mc.player.getOnPos()), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
+            mc.level.playSound(null, mc.player.getOnPos(), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 0.3F, 0.6F);
             mc.gui.hud.getChat().addClientSystemMessage(Component.literal("Finder Compass Mode: " + currentSetting.getName()));
         }
     }
