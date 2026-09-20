@@ -88,7 +88,7 @@ public class DynamicLights {
     public static final RegistryObject<Block> LIT_WATER_BLOCK = BLOCKS.register("lit_water", () ->
             new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of().setId(BLOCKS.key("lit_water"))
                     .mapColor(MapColor.WATER).replaceable().noCollision().strength(100.0F)
-                    .pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY)
+                    .pushReaction(PushReaction.POPPED).noLootTable().liquid().sound(SoundType.EMPTY)
                     .lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER))));
     public static final RegistryObject<Block> LIT_CAVE_AIR_BLOCK = BLOCKS.register("lit_cave_air", () ->

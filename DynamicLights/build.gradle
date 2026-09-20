@@ -53,7 +53,7 @@ repositories {
 
 dependencies {
     implementation minecraft.dependency('net.minecraftforge:forge:' + minecraft_version + '-' + forge_version)
-    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.1'
+    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.6'
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
