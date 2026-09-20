@@ -89,7 +89,7 @@ public class DynamicLights {
             new BlockLitWater(Fluids.WATER, BlockBehaviour.Properties.of()
                     .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "lit_water")))
                     .mapColor(MapColor.WATER).replaceable().noCollision().strength(100.0F)
-                    .pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY)
+                    .pushReaction(PushReaction.POPPED).noLootTable().liquid().sound(SoundType.EMPTY)
                     .lightLevel((x)
                             -> x.getValue(BlockStateProperties.POWER))));
 
