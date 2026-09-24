@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'net.minecraftforge.gradle' version '[7.0.17,8)'
-    id "me.modmuss50.mod-publish-plugin" version "0.7.4"
+    id "me.modmuss50.mod-publish-plugin" version "2.2.1"
 }
 
 version = mod_version
@@ -103,5 +103,7 @@ publishMods {
         projectSlug = mod_id // Required for discord webhook
         accessToken = curseForgeApiKey
         minecraftVersions.add(minecraft_version)
+        client = true
+        server = true
     }
 }
