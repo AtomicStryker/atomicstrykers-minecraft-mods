@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
 	id 'idea'
     id 'net.neoforged.moddev' version '2.0.147'
-    id "me.modmuss50.mod-publish-plugin" version "0.7.4"
+    id "me.modmuss50.mod-publish-plugin" version "2.2.1"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -152,6 +152,8 @@ publishMods {
         projectSlug = mod_id // Required for discord webhook
         accessToken = curseForgeApiKey
         minecraftVersions.add(minecraft_version)
+        client = true
+        server = true
     }
 }
 
