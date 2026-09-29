@@ -24,6 +24,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -113,6 +114,13 @@ public class DynamicLights {
         // dedicated server starting point
         if (config == null) {
             initConfig();
+        }
+    }
+
+    @SubscribeEvent
+    public void levelUnloaded(LevelEvent.Unload evt) {
+        if (worldLightsMap.remove(evt.getLevel()) != null) {
+            LOGGER.info("LevelEvent.Unload for {}", evt.getLevel());
         }
     }
 
