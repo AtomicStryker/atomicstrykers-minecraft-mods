@@ -1,3 +1,6 @@
+26.3.2
+- fixes level objects not being unloaded, thanks Archengius from Github
+
 26.3.1
 - updated for MC 26.3 and Forge 66.0.2
 
