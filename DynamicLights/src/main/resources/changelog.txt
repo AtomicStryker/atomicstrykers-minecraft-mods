@@ -1,3 +1,6 @@
+26.3.2NF
+- fixes level objects not being unloaded, thanks Archengius from Github
+
 26.3.1NF
 - updated to MC 26.3 and neoforge 26.3.0.7-beta
 

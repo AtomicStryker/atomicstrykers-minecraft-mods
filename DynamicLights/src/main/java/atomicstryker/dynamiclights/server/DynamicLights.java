@@ -28,6 +28,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -117,6 +118,13 @@ public class DynamicLights {
         // dedicated server starting point
         if (config == null) {
             initConfig();
+        }
+    }
+
+    @SubscribeEvent
+    public void levelUnloaded(LevelEvent.Unload evt) {
+        if (worldLightsMap.remove(evt.getLevel()) != null) {
+            LOGGER.info("LevelEvent.Unload for {}", evt.getLevel());
         }
     }
 
