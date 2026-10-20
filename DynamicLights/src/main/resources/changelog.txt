@@ -1,3 +1,6 @@
+26.3.3NF
+- fixes tagging json paths being wrong, thanks ThexXTURBOXx from Github, also his explanation
+
 26.3.2NF
 - fixes level objects not being unloaded, thanks Archengius from Github
 
