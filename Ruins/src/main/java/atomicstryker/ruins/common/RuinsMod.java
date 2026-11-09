@@ -2,6 +2,14 @@ package atomicstryker.ruins.common;
 
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -28,6 +36,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.Set;
+import java.util.Map;
+import java.util.Collections;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,16 +76,27 @@ public class RuinsMod {
 
         if (iWorld instanceof ServerLevel) {
             ServerLevel world = (ServerLevel) iWorld;
-            try {
-                Field declaredField = world.getChunkSource().getDataStorage().getClass().getDeclaredField("dataFolder");
-                declaredField.setAccessible(true);
-                return (File) declaredField.get(world.getChunkSource().getDataStorage());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // the same folder ServerLevel gives its DimensionDataStorage; looking the field up by its name
+            // ("dataFolder") only works in a dev environment, outside one the field name is obfuscated
+            return DimensionType.getStorageFolder(world.dimension(), world.getServer().getWorldPath(LevelResource.ROOT))
+                    .resolve("data").toFile();
         }
         return null;
     }
+
+    /**
+     * All biomes of the running server. Since 1.19 biomes are data pack entries, ForgeRegistries.BIOMES does not
+     * contain them (not even vanilla's), so it can't be used to look up biome names.
+     */
+    public static Set<Map.Entry<ResourceKey<Biome>, Biome>> getBiomeEntries() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            lastBiomeRegistry = server.registryAccess().registryOrThrow(Registries.BIOME);
+        }
+        return lastBiomeRegistry != null ? lastBiomeRegistry.entrySet() : Collections.emptySet();
+    }
+
+    private static volatile Registry<Biome> lastBiomeRegistry;
 
     public static File getMinecraftBaseDir() {
         return proxy.getBaseDir();
