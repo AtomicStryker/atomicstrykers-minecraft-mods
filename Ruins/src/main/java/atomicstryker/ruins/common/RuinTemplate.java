@@ -101,16 +101,17 @@ public class RuinTemplate {
 
 
     public boolean isIgnoredBlock(BlockState blockState) {
-        // water and lava are ground, unless the template says to keep them (preserve_water / preserve_lava): water is
-        // never "solid", so it used to always be looked through and ruins ended up on the sea floor, and the
-        // preserve settings and "unacceptable_target_blocks=water" did nothing
+        // water and lava count as ground, so templates can accept or refuse them as a surface
+        // (unacceptable_target_blocks=water), unless the template keeps them (preserve_water / preserve_lava).
+        // Checked before isSolid(), which is false for fluids.
         if (blockState.is(Blocks.WATER)) {
             return preserveWater;
         }
         if (blockState.is(Blocks.LAVA)) {
             return preserveLava;
         }
-        // trees are looked through, like plants (leaves and logs are solid, so ruins used to sit on treetops)
+        // trees are looked through like plants, so ruins are built on the ground under them, not on the treetops
+        // (leaves and logs are solid blocks)
         if (blockState.is(BlockTags.LEAVES) || blockState.is(BlockTags.LOGS)) {
             return true;
         }
@@ -118,8 +119,7 @@ public class RuinTemplate {
     }
 
     public boolean isAcceptableSurface(Level world, BlockState blockState, BlockPos pos) {
-        // the target block lists name blocks, so compare blocks: comparing whole states meant e.g. "water" only
-        // matched still water and "oak_stairs" only one of its 80 states
+        // the target block lists name blocks, so match any state of a listed block (flowing water, any stairs facing)
         for (BlockState b : deniedSurfaces) {
             if (blockState.is(b.getBlock())) {
                 return false;
