@@ -303,9 +303,11 @@ public class RuinsMod {
         try {
             File worlddir = getWorldSaveDir(world);
             LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
+            // set before FileHandler starts its loader thread: parsing the templates' block states needs it, and
+            // a thread that got there first read every block as air (or failed on null)
+            lastLoadedLevel = world;
             worldHandle.fileHandle = new FileHandler(worlddir, world.dimension().location());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
-            lastLoadedLevel = world;
 
         } catch (Exception e) {
             LOGGER.error("There was a problem loading the ruins mod:");
