@@ -101,7 +101,7 @@ class FileHandler {
              * dynamic Biome config loader, gets all information straight from
              * Biome
              */
-            for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getBiomeEntries()) {
+            for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
                 ResourceLocation rl = entry.getKey().location();
                 {
                     try {
@@ -224,7 +224,7 @@ class FileHandler {
                 enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
             } else if ((matcher = patternSpecificBiome.matcher(read)).matches()) {
                 boolean found = false;
-                for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getBiomeEntries()) {
+                for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
                     ResourceLocation rl = entry.getKey().location();
                     if (rl.getPath().equals(matcher.group(1))) {
                         double[] val = vars.get(rl.getPath());
@@ -262,7 +262,7 @@ class FileHandler {
                     }
                     targetList.add(r);
                     for (String biomeName : r.getBiomesToSpawnIn()) {
-                        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getBiomeEntries()) {
+                        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
                             bgb = entry.getValue();
                             if (bgb != null && entry.getKey().location().getPath().equals(biomeName)) {
                                 if (!biomeName.equals(name)) {
@@ -358,7 +358,7 @@ class FileHandler {
         pw.println("teblocks=");
         pw.println();
         // print all the biomes!
-        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getBiomeEntries()) {
+        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
             Biome bgb = entry.getValue();
             if (bgb != null) {
                 pw.println("specific_" + entry.getKey().location().getPath() + "=75");
