@@ -172,10 +172,22 @@ public class RuinsMod {
         }
     }
 
+    /** Ruins are centred on a random spot in the chunk, so a footprint up to ~52 blocks wide stays within 2 chunks. */
+    private static final int CHUNK_READY_RADIUS = 2;
+
     private void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
 
-        if (!world.hasChunk(chunkPos.x, chunkPos.z)) {
-            return;
+        // hasChunk is already true while a chunk is only queued to load, and reading a block from a chunk that isn't
+        // generated yet makes the server thread generate it on the spot. The site search also reads the ground under
+        // the whole ruin, which reaches into the chunks around this one. So wait until this chunk and the chunks
+        // within CHUNK_READY_RADIUS of it are fully generated (getChunkNow never loads anything). The chunk isn't
+        // marked, so it's looked at again a move or two later.
+        for (int dx = -CHUNK_READY_RADIUS; dx <= CHUNK_READY_RADIUS; dx++) {
+            for (int dz = -CHUNK_READY_RADIUS; dz <= CHUNK_READY_RADIUS; dz++) {
+                if (world.getChunkSource().getChunkNow(chunkPos.x + dx, chunkPos.z + dz) == null) {
+                    return;
+                }
+            }
         }
 
         BlockPos ruinsMarkerBlockPos = new BlockPos(chunkPos.getMinBlockX(), world.getMinBuildHeight(), chunkPos.getMinBlockZ());
