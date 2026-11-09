@@ -10,6 +10,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -99,7 +100,9 @@ public class RuinsMod {
     private static volatile Registry<Biome> lastBiomeRegistry;
 
     public static File getMinecraftBaseDir() {
-        return proxy.getBaseDir();
+        // from FML, like 26.x: the server proxy asked the running server, which is null while it shuts down, so a
+        // dimension whose Ruins data was first set up then lost its ruins.txt (NullPointerException, defaults used)
+        return FMLPaths.GAMEDIR.get().toFile();
     }
 
     @SubscribeEvent
