@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -14,8 +15,6 @@ import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,7 +44,6 @@ public class RuinTemplate {
     public int uniqueMinDistance = 0;
     public int spawnMinDistance = 0;
     public int spawnMaxDistance = Integer.MAX_VALUE;
-    IForgeRegistry<Biome> biomeRegistry = null;
     private BlockState[] acceptedSurfaces, deniedSurfaces;
     private int height = 0, width = 0, length = 0, overhang = 0, embed = 0, randomOffMin = 0, randomOffMax = 0;
     private double weight = 1;
@@ -103,12 +101,27 @@ public class RuinTemplate {
 
 
     public boolean isIgnoredBlock(BlockState blockState) {
-        return !blockState.isSolid() || preserveWater && blockState.is(Blocks.WATER) || preserveLava && blockState.is(Blocks.LAVA);
+        // water and lava are ground, unless the template says to keep them (preserve_water / preserve_lava): water is
+        // never "solid", so it used to always be looked through and ruins ended up on the sea floor, and the
+        // preserve settings and "unacceptable_target_blocks=water" did nothing
+        if (blockState.is(Blocks.WATER)) {
+            return preserveWater;
+        }
+        if (blockState.is(Blocks.LAVA)) {
+            return preserveLava;
+        }
+        // trees are looked through, like plants (leaves and logs are solid, so ruins used to sit on treetops)
+        if (blockState.is(BlockTags.LEAVES) || blockState.is(BlockTags.LOGS)) {
+            return true;
+        }
+        return !blockState.isSolid();
     }
 
     public boolean isAcceptableSurface(Level world, BlockState blockState, BlockPos pos) {
+        // the target block lists name blocks, so compare blocks: comparing whole states meant e.g. "water" only
+        // matched still water and "oak_stairs" only one of its 80 states
         for (BlockState b : deniedSurfaces) {
-            if (blockState == b) {
+            if (blockState.is(b.getBlock())) {
                 return false;
             }
         }
@@ -119,7 +132,7 @@ public class RuinTemplate {
         }
 
         for (BlockState b : acceptedSurfaces) {
-            if (blockState == b) {
+            if (blockState.is(b.getBlock())) {
                 return true;
             }
         }
@@ -338,7 +351,14 @@ public class RuinTemplate {
                             break;
                     }
                     curRule = rules.get(rulenum);
-                    curRule.doBlock(world, random, new BlockPos(x + x1, y + y_off, z + z1), rotate);
+                    BlockPos pos = new BlockPos(x + x1, y + y_off, z + z1);
+                    if (curRule.runLater() || curRule.runLast()) {
+                        // conditional rules wait until the rest is built; rule 0 fills the spot meanwhile
+                        (curRule.runLater() ? laterun : lastrun).add(new RuinRuleProcess(curRule, pos.getX(), pos.getY(), pos.getZ(), rotate));
+                        rules.get(0).doBlock(world, random, pos, rotate);
+                    } else {
+                        curRule.doBlock(world, random, pos, rotate);
+                    }
                 }
             }
 
@@ -743,7 +763,7 @@ public class RuinTemplate {
         // 1) biomes listed as biomesToSpawnIn are added (regardless of biomesToNotSpawnIn)
         // 2) biomes listed as biomesToNotSpawnIn are not added (regardless of biomeTypesToSpawnIn)
         // 3) biomes satisfying at least one biomeTypesToSpawnIn criterion are added
-        for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
+        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getBiomeEntries()) {
             Biome biome = entry.getValue();
             String biome_name = entry.getKey().identifier().getPath();
             if (!biomes.contains(biome_name)) {

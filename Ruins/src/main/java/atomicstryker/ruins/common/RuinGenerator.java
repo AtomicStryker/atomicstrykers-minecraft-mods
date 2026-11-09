@@ -8,7 +8,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -164,13 +163,11 @@ class RuinGenerator {
             RuinsMod.LOGGER.info("    No Surface fails:            " + stats.noSurfaceFails);
             RuinsMod.LOGGER.info("    Leveling fails:              " + stats.levelingFails);
 
-            for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
-                Biome biome = entry.getValue();
-                if (biome != null) {
-                    Integer i = stats.biomes.get(ForgeRegistries.BIOMES.getKey(biome).getPath());
-                    if (i != null) {
-                        RuinsMod.LOGGER.info(ForgeRegistries.BIOMES.getKey(biome).getPath() + ": " + i + " Biome building attempts");
-                    }
+            for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getBiomeEntries()) {
+                String path = entry.getKey().identifier().getPath();
+                Integer i = stats.biomes.get(path);
+                if (i != null) {
+                    RuinsMod.LOGGER.info(path + ": " + i + " Biome building attempts");
                 }
             }
             RuinsMod.LOGGER.info("Any-Biome: " + stats.biomes.get(RuinsMod.BIOME_ANY) + " building attempts");
@@ -245,9 +242,9 @@ class RuinGenerator {
                     continue;
                 }
 
-                if (r.isAcceptableSurface(world, b, pos)) {
-                    return y + 1;
-                }
+                // the first block that isn't looked through is the ground: if the template doesn't accept it
+                // (e.g. water), there is no spot here. Searching on below it put ruins under lakes and the sea.
+                return r.isAcceptableSurface(world, b, pos) ? y + 1 : world.getMinY() - 1;
             }
             // how did we reach here? no bedrock?
             return world.getMinY() - 1;
@@ -258,35 +255,27 @@ class RuinGenerator {
              * random here)
              */
             if ((x % 2 == 1) ^ (z % 2 == 1)) {
-                // from the top. Find the first air block from the ceiling
-                for (int y = world.getMaxY() - 1; y > WORLD_MIN_HEIGHT; y--) {
-                    BlockPos basePos = new BlockPos(x, y, z);
-                    final BlockState b = world.getBlockState(basePos);
-                    if (b.is(Blocks.BEDROCK)) {
-                        return world.getMinY() - 1;
-                    }
-                    if (b.is(Blocks.AIR)) {
-                        // now find the first non-air block from here
-                        for (; y > WORLD_MIN_HEIGHT; y--) {
+                // from the top. Start under the ceiling (above it, up to the build limit, is open air on the
+                // bedrock roof), find the first air block, then the first solid block below it
+                for (int y = world.getMinY() + world.dimensionType().logicalHeight() - 1; y > world.getMinY(); y--) {
+                    if (world.getBlockState(new BlockPos(x, y, z)).is(Blocks.AIR)) {
+                        for (; y > world.getMinY(); y--) {
                             BlockPos pos = new BlockPos(x, y, z);
-                            if (!r.isIgnoredBlock(world.getBlockState(pos))) {
-                                if (r.isAcceptableSurface(world, b, pos)) {
-                                    return y + 1;
-                                }
-                                return world.getMinY() - 1;
+                            final BlockState b = world.getBlockState(pos);
+                            if (!r.isIgnoredBlock(b)) {
+                                return r.isAcceptableSurface(world, b, pos) ? y + 1 : world.getMinY() - 1;
                             }
                         }
+                        break;
                     }
                 }
             } else {
-                // from the bottom. find the first air block from the floor
+                // from the bottom. find the first air block above the floor; the bedrock floor itself is part of
+                // the ground (returning on bedrock here made every Nether try fail on its first block)
                 boolean accept = false;
-                for (int y = 0; y < world.getMaxY(); y++) {
+                for (int y = world.getMinY(); y < world.getMinY() + world.dimensionType().logicalHeight(); y++) {
                     BlockPos pos = new BlockPos(x, y, z);
                     final BlockState b = world.getBlockState(pos);
-                    if (b.is(Blocks.BEDROCK)) {
-                        return world.getMinY() - 1;
-                    }
                     if (!r.isIgnoredBlock(b)) {
                         accept = r.isAcceptableSurface(world, b, pos);
                     } else {

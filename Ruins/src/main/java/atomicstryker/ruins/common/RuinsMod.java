@@ -2,6 +2,12 @@ package atomicstryker.ruins.common;
 
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -30,6 +36,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.Set;
+import java.util.Map;
+import java.util.Collections;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -83,6 +92,20 @@ public class RuinsMod {
         }
         return null;
     }
+
+    /**
+     * All biomes of the running server. Since 1.19 biomes are data pack entries, ForgeRegistries.BIOMES does not
+     * contain them (not even vanilla's), so it can't be used to look up biome names.
+     */
+    public static Set<Map.Entry<ResourceKey<Biome>, Biome>> getBiomeEntries() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            lastBiomeRegistry = server.registryAccess().lookupOrThrow(Registries.BIOME);
+        }
+        return lastBiomeRegistry != null ? lastBiomeRegistry.entrySet() : Collections.emptySet();
+    }
+
+    private static volatile Registry<Biome> lastBiomeRegistry;
 
     public static File getMinecraftBaseDir() {
         return FMLPaths.GAMEDIR.get().toFile();
@@ -290,9 +313,11 @@ public class RuinsMod {
         try {
             File worlddir = getWorldSaveDir(world);
             LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
+            // set before FileHandler starts its loader thread: parsing the templates' block states needs it, and
+            // a thread that got there first read every block as air (or failed on null)
+            lastLoadedLevel = world;
             worldHandle.fileHandle = new FileHandler(worlddir, world.dimension().identifier());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
-            lastLoadedLevel = world;
 
         } catch (Exception e) {
             LOGGER.error("There was a problem loading the ruins mod:");
