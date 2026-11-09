@@ -763,7 +763,7 @@ public class RuinTemplate {
         // 1) biomes listed as biomesToSpawnIn are added (regardless of biomesToNotSpawnIn)
         // 2) biomes listed as biomesToNotSpawnIn are not added (regardless of biomeTypesToSpawnIn)
         // 3) biomes satisfying at least one biomeTypesToSpawnIn criterion are added
-        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getBiomeEntries()) {
+        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
             Biome biome = entry.getValue();
             String biome_name = entry.getKey().identifier().getPath();
             if (!biomes.contains(biome_name)) {

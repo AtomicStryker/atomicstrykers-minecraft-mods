@@ -97,7 +97,7 @@ public class RuinsMod {
      * All biomes of the running server. Since 1.19 biomes are data pack entries, ForgeRegistries.BIOMES does not
      * contain them (not even vanilla's), so it can't be used to look up biome names.
      */
-    public static Set<Map.Entry<ResourceKey<Biome>, Biome>> getBiomeEntries() {
+    public Set<Map.Entry<ResourceKey<Biome>, Biome>> getBiomeEntries() {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null) {
             lastBiomeRegistry = server.registryAccess().lookupOrThrow(Registries.BIOME);
@@ -105,7 +105,7 @@ public class RuinsMod {
         return lastBiomeRegistry != null ? lastBiomeRegistry.entrySet() : Collections.emptySet();
     }
 
-    private static volatile Registry<Biome> lastBiomeRegistry;
+    private volatile Registry<Biome> lastBiomeRegistry;
 
     public static File getMinecraftBaseDir() {
         return FMLPaths.GAMEDIR.get().toFile();
@@ -179,17 +179,17 @@ public class RuinsMod {
     }
 
     /** Ruins are centred on a random spot in the chunk, so a footprint up to ~52 blocks wide stays within 2 chunks. */
-    private static final int CHUNK_READY_RADIUS = 2;
+    private final int chunkReadyRadius = 2;
 
     private void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
 
         // hasChunk is already true while a chunk is only queued to load, and reading a block from a chunk that isn't
         // generated yet makes the server thread generate it on the spot. The site search also reads the ground under
         // the whole ruin, which reaches into the chunks around this one. So wait until this chunk and the chunks
-        // within CHUNK_READY_RADIUS of it are fully generated (getChunkNow never loads anything). The chunk isn't
+        // within chunkReadyRadius of it are fully generated (getChunkNow never loads anything). The chunk isn't
         // marked, so it's looked at again a move or two later.
-        for (int dx = -CHUNK_READY_RADIUS; dx <= CHUNK_READY_RADIUS; dx++) {
-            for (int dz = -CHUNK_READY_RADIUS; dz <= CHUNK_READY_RADIUS; dz++) {
+        for (int dx = -chunkReadyRadius; dx <= chunkReadyRadius; dx++) {
+            for (int dz = -chunkReadyRadius; dz <= chunkReadyRadius; dz++) {
                 if (world.getChunkSource().getChunkNow(chunkPos.x() + dx, chunkPos.z() + dz) == null) {
                     return;
                 }

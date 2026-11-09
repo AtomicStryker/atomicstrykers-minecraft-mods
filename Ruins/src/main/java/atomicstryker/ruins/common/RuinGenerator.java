@@ -163,7 +163,7 @@ class RuinGenerator {
             RuinsMod.LOGGER.info("    No Surface fails:            " + stats.noSurfaceFails);
             RuinsMod.LOGGER.info("    Leveling fails:              " + stats.levelingFails);
 
-            for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getBiomeEntries()) {
+            for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
                 String path = entry.getKey().identifier().getPath();
                 Integer i = stats.biomes.get(path);
                 if (i != null) {
