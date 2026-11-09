@@ -189,7 +189,10 @@ public class RuinsMod {
         if (blockState.is(Blocks.BARRIER)) {
             return;
         }
-        world.setBlock(ruinsMarkerBlockPos, Blocks.BARRIER.defaultBlockState(), 3);
+        // UPDATE_CLIENTS | UPDATE_KNOWN_SHAPE: no neighbour updates. With 3, updating the neighbours to the west and
+        // north reached into the next chunks, and if those weren't generated yet the server thread stopped and
+        // waited for them to generate. The marker is on the bottom layer, so nothing around it needs updating.
+        world.setBlock(ruinsMarkerBlockPos, Blocks.BARRIER.defaultBlockState(), 2 | 16);
 
         LOGGER.trace("Ruins generation for chunk {}", chunkPos);
         if (world.dimension().identifier().getPath().equals("the_nether")) {
