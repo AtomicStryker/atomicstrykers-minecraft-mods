@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
@@ -77,8 +78,8 @@ public class RuinsMod {
 
         if (iWorld instanceof ServerLevel) {
             ServerLevel world = (ServerLevel) iWorld;
-            // the same folder ServerLevel gives its DimensionDataStorage; looking the field up by its name
-            // ("dataFolder") only works in a dev environment, outside one the field name is obfuscated
+            // the dimension's "data" folder, where Minecraft keeps per-dimension saved data (DimensionDataStorage).
+            // Ruins keeps its per-world ruins.txt and the list of built ruins there, next to the vanilla data files.
             return DimensionType.getStorageFolder(world.dimension(), world.getServer().getWorldPath(LevelResource.ROOT))
                     .resolve("data").toFile();
         }
@@ -97,11 +98,12 @@ public class RuinsMod {
         return lastBiomeRegistry != null ? lastBiomeRegistry.entrySet() : Collections.emptySet();
     }
 
+    // the biome registry of the last running server, cached so biome lookups still work while no server is
+    // available (e.g. during shutdown)
     private volatile Registry<Biome> lastBiomeRegistry;
 
     public static File getMinecraftBaseDir() {
-        // from FML, like 26.x: the server proxy asked the running server, which is null while it shuts down, so a
-        // dimension whose Ruins data was first set up then lost its ruins.txt (NullPointerException, defaults used)
+        // the game folder from FML: it's available at any time, also while the server is starting or shutting down
         return FMLPaths.GAMEDIR.get().toFile();
     }
 
@@ -177,11 +179,10 @@ public class RuinsMod {
 
     private void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
 
-        // hasChunk is already true while a chunk is only queued to load, and reading a block from a chunk that isn't
-        // generated yet makes the server thread generate it on the spot. The site search also reads the ground under
-        // the whole ruin, which reaches into the chunks around this one. So wait until this chunk and the chunks
-        // within chunkReadyRadius of it are fully generated (getChunkNow never loads anything). The chunk isn't
-        // marked, so it's looked at again a move or two later.
+        // Only inspect a chunk once it and the chunks within chunkReadyRadius are fully generated. Reading blocks
+        // from a chunk that isn't would make the server thread generate it on the spot, and the site search reads the
+        // ground under the whole ruin, around this chunk. getChunkNow never loads anything (hasChunk is already true
+        // for a chunk that is only queued to load). An unready chunk isn't marked, so it is inspected again later.
         for (int dx = -chunkReadyRadius; dx <= chunkReadyRadius; dx++) {
             for (int dz = -chunkReadyRadius; dz <= chunkReadyRadius; dz++) {
                 if (world.getChunkSource().getChunkNow(chunkPos.x + dx, chunkPos.z + dz) == null) {
@@ -195,10 +196,9 @@ public class RuinsMod {
         if (blockState.is(Blocks.BARRIER)) {
             return;
         }
-        // UPDATE_CLIENTS | UPDATE_KNOWN_SHAPE: no neighbour updates. With 3, updating the neighbours to the west and
-        // north reached into the next chunks, and if those weren't generated yet the server thread stopped and
-        // waited for them to generate. The marker is on the bottom layer, so nothing around it needs updating.
-        world.setBlock(ruinsMarkerBlockPos, Blocks.BARRIER.defaultBlockState(), 2 | 16);
+        // no neighbour or shape updates: the marker is on the chunk's corner, so its neighbours are in the next chunks,
+        // and updating them would load (or generate) those. Nothing around a bottom-layer barrier needs updating.
+        world.setBlock(ruinsMarkerBlockPos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 
         LOGGER.trace("Ruins generation for chunk {}", chunkPos);
         if (world.dimension().location().getPath().equals("the_nether")) {
@@ -321,8 +321,7 @@ public class RuinsMod {
         try {
             File worlddir = getWorldSaveDir(world);
             LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
-            // set before FileHandler starts its loader thread: parsing the templates' block states needs it, and
-            // a thread that got there first read every block as air (or failed on null)
+            // must be set before FileHandler starts its loader thread, which parses the templates' block states with it
             lastLoadedLevel = world;
             worldHandle.fileHandle = new FileHandler(worlddir, world.dimension().location());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);

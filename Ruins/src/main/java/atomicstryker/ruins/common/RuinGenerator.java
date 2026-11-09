@@ -243,11 +243,14 @@ class RuinGenerator {
                     continue;
                 }
 
-                // the first block that isn't looked through is the ground: if the template doesn't accept it
-                // (e.g. water), there is no spot here. Searching on below it put ruins under lakes and the sea.
-                return r.isAcceptableSurface(world, b, pos) ? y + 1 : world.getMinBuildHeight() - 1;
+                if (r.isAcceptableSurface(world, b, pos)) {
+                    return y + 1;
+                }
+                // the first block that isn't looked through is the ground. If the template doesn't accept it
+                // (e.g. water), this column has no spot; don't search on below it (under a lake or the sea).
+                break;
             }
-            // how did we reach here? no bedrock?
+            // no acceptable ground in this column
             return world.getMinBuildHeight() - 1;
         } else {
             /*
@@ -256,23 +259,25 @@ class RuinGenerator {
              * random here)
              */
             if ((x % 2 == 1) ^ (z % 2 == 1)) {
-                // from the top. Start under the ceiling (above it, up to the build limit, is open air on the
-                // bedrock roof), find the first air block, then the first solid block below it
+                // from the top. Start at the dimension's logical height, under the bedrock ceiling (above it is
+                // only the roof and open air), find the first air block, then the first solid block below it
                 for (int y = world.getMinBuildHeight() + world.dimensionType().logicalHeight() - 1; y > world.getMinBuildHeight(); y--) {
                     if (world.getBlockState(new BlockPos(x, y, z)).is(Blocks.AIR)) {
                         for (; y > world.getMinBuildHeight(); y--) {
                             BlockPos pos = new BlockPos(x, y, z);
                             final BlockState b = world.getBlockState(pos);
                             if (!r.isIgnoredBlock(b)) {
-                                return r.isAcceptableSurface(world, b, pos) ? y + 1 : world.getMinBuildHeight() - 1;
+                                if (r.isAcceptableSurface(world, b, pos)) {
+                                    return y + 1;
+                                }
+                                break;
                             }
                         }
                         break;
                     }
                 }
             } else {
-                // from the bottom. find the first air block above the floor; the bedrock floor itself is part of
-                // the ground (returning on bedrock here made every Nether try fail on its first block)
+                // from the bottom. The bedrock floor counts as ground; find the first air block above the ground
                 boolean accept = false;
                 for (int y = world.getMinBuildHeight(); y < world.getMinBuildHeight() + world.dimensionType().logicalHeight(); y++) {
                     BlockPos pos = new BlockPos(x, y, z);

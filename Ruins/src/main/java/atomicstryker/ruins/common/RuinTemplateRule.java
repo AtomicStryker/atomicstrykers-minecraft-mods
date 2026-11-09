@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,11 +36,11 @@ public class RuinTemplateRule {
     private static final Pattern PREFIX = Pattern.compile("^\\s*(-?\\d+)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*,");
 
     private static final String PARAMETERS_TAG = "Ruins";
-    // UPDATE_CLIENTS | UPDATE_KNOWN_SHAPE: place blocks exactly as the template has them, without block or shape
-    // updates. With updates (3), torches, ladders, vines, buttons and crops broke while the blocks around them were
-    // still missing, water and lava started to flow and sand fell. The templates store full states (the parser saves
-    // connections as they were in the world), so nothing needs updating.
-    private static final int PLACE_FLAGS = 2 | 16;
+    // Place blocks exactly as the template stores them: send them to clients, but don't notify or reshape the
+    // neighbours. Ruins are built block by block, so with neighbour/shape updates a torch, ladder, vine, button or crop
+    // placed before its support would break, water and lava would start to flow and sand would fall. Templates store
+    // full block states, connections included, so nothing needs to be recomputed.
+    private static final int PLACE_FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
     private static final String NAME_TAG = "Name";
     private static final String NULL_BLOCK_NAME = "ruins:null";
 

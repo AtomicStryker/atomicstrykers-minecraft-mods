@@ -102,16 +102,17 @@ public class RuinTemplate {
 
 
     public boolean isIgnoredBlock(BlockState blockState) {
-        // water and lava are ground, unless the template says to keep them (preserve_water / preserve_lava): water is
-        // never "solid", so it used to always be looked through and ruins ended up on the sea floor, and the
-        // preserve settings and "unacceptable_target_blocks=water" did nothing
+        // water and lava count as ground, so templates can accept or refuse them as a surface
+        // (unacceptable_target_blocks=water), unless the template keeps them (preserve_water / preserve_lava).
+        // Checked before isSolid(), which is false for fluids.
         if (blockState.is(Blocks.WATER)) {
             return preserveWater;
         }
         if (blockState.is(Blocks.LAVA)) {
             return preserveLava;
         }
-        // trees are looked through, like plants (leaves and logs are solid, so ruins used to sit on treetops)
+        // trees are looked through like plants, so ruins are built on the ground under them, not on the treetops
+        // (leaves and logs are solid blocks)
         if (blockState.is(BlockTags.LEAVES) || blockState.is(BlockTags.LOGS)) {
             return true;
         }
@@ -119,8 +120,7 @@ public class RuinTemplate {
     }
 
     public boolean isAcceptableSurface(Level world, BlockState blockState, BlockPos pos) {
-        // the target block lists name blocks, so compare blocks: comparing whole states meant e.g. "water" only
-        // matched still water and "oak_stairs" only one of its 80 states
+        // the target block lists name blocks, so match any state of a listed block (flowing water, any stairs facing)
         for (BlockState b : deniedSurfaces) {
             if (blockState.is(b.getBlock())) {
                 return false;
@@ -397,7 +397,7 @@ public class RuinTemplate {
         }
         bonemealMarkers.clear();
 
-        // Remove plants that this build left without ground (see removeUnsupportedPlants)
+        // remove plants that this build left without ground (see removeUnsupportedPlants)
         final int buffer = (leveling > 0 && lbuffer > 0) ? lbuffer : 0;
         final int levelDepth = Math.max(leveling, 0);
         removeUnsupportedPlants(world,
@@ -428,17 +428,17 @@ public class RuinTemplate {
     }
 
     /**
-     * Templates are placed without block updates (RuinTemplateRule.PLACE_FLAGS), so that torches, ladders and crops
-     * don't break while the blocks around them are still missing. The side effect: when a template puts air or a floor
-     * one block lower where the grass block was, a plant that was already standing there (worldgen grass, flowers,
-     * tall grass from a neighbouring chunk) is never told it lost its ground, and stays floating in the ruin.
+     * Templates are placed without block or shape updates (RuinTemplateRule.PLACE_FLAGS), so that torches, ladders and
+     * crops don't break while the blocks around them are still missing. Because of that, a plant that was already
+     * standing in the world (grass, flowers, tall grass) is never told when the template puts air or a lower floor under
+     * it, and would stay floating in the ruin.
      * <p>
      * This runs once the whole ruin is built and removes only plants ({@link BushBlock}: grass, flowers, ferns,
      * double plants, saplings, mushrooms, crops...) that can no longer survive where they are. Going bottom to top means
      * the upper half of a double plant is checked after its lower half is gone, so it is removed too. Blocks the
      * template placed on valid ground (crops on farmland, flowers on grass) still survive and are left alone.
      */
-    private static void removeUnsupportedPlants(Level world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+    private void removeUnsupportedPlants(Level world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         final int bottom = Math.max(minY, world.getMinBuildHeight());
         final int top = Math.min(maxY, world.getMaxBuildHeight() - 1);
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -450,7 +450,7 @@ public class RuinTemplate {
                     BlockState state = world.getBlockState(pos);
                     if (state.getBlock() instanceof BushBlock && !state.canSurvive(world, pos)) {
                         // keep water if the plant was waterlogged / underwater (seagrass etc.)
-                        world.setBlock(pos, state.getFluidState().createLegacyBlock(), 2 | 16);
+                        world.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
                         removed++;
                     }
                 }
