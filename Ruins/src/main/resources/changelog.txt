@@ -671,3 +671,8 @@ a: setAccessible now true
 + updated to MC 26.3 and neoforge 26.3.0.7-beta
 + note: Minecraft json/nbt api has changed, Name became id, custom templates needs converting
 + example: {Name:"minecraft:blue_wool"} becomes {id:"minecraft:blue_wool"}
+
+26.3.2NF
++ merge PR https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/576 by Flankrat and Claude
++ fix biome ruins never spawning, ruins on the sea floor, no Nether ruins, ignored rule chance/conditions, broken torches
+

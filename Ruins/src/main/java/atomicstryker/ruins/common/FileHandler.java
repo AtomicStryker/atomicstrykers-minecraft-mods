@@ -253,6 +253,7 @@ class FileHandler {
 
     private void addRuins(File path, String name, HashSet<RuinTemplate> targetList) {
         RuinTemplate r;
+        Biome bgb;
         File[] listFiles = path.listFiles();
 
         String dimensionName = dimension.getPath();
@@ -264,8 +265,6 @@ class FileHandler {
                         continue;
                     }
                     targetList.add(r);
-                    HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
-                    Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
                     for (String biomeName : r.getBiomesToSpawnIn()) {
                         for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
                             bgb = entry.getValue();
