@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -15,6 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.util.List;
@@ -28,14 +31,30 @@ public class RuinTemplateRule {
     private final RuinTemplate owner;
     private final boolean excessiveDebugging;
     private double blockWeightsTotal;
+    // the "condition,chance," in front of a rule (e.g. "rule3=1,50,{...}")
+    private int condition = 0;
+    private double chance = 1;
+
+    private static final Pattern PREFIX = Pattern.compile("^\\s*(-?\\d+)\\s*,\\s*(\\d+(?:\\.\\d+)?)\\s*,");
 
     private static final String PARAMETERS_TAG = "Ruins";
+    // Place blocks exactly as the template stores them: send them to clients, but don't notify or reshape the
+    // neighbours. Ruins are built block by block, so with neighbour/shape updates a torch, ladder, vine, button or crop
+    // placed before its support would break, water and lava would start to flow and sand would fall. Templates store
+    // full block states, connections included, so nothing needs to be recomputed.
+    private static final int PLACE_FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
     private static final String NAME_TAG = "Name";
     private static final String NULL_BLOCK_NAME = "ruins:null";
 
     public RuinTemplateRule(RuinTemplate r, String rule, boolean debug) {
         owner = r;
         excessiveDebugging = debug;
+
+        Matcher prefix = PREFIX.matcher(rule);
+        if (prefix.find()) {
+            condition = Integer.parseInt(prefix.group(1));
+            chance = Math.min(Math.max(Double.parseDouble(prefix.group(2)) / 100, 0), 1);
+        }
 
         List<CompoundTag> stateCompounds = RuleStringNbtHelper.splitRuleByBrackets(rule);
         if (stateCompounds == null || stateCompounds.isEmpty()) {
@@ -153,8 +172,46 @@ public class RuinTemplateRule {
     }
 
     public void doBlock(Level world, RandomSource random, BlockPos pos, int rotate) {
+        if (chance < 1 && random.nextDouble() >= chance) {
+            return;
+        }
+        if (!conditionMet(world, pos)) {
+            return;
+        }
         int blocknum = getBlockNum(random);
         handleBlockSpawning(world, random, pos, blocknum, rotate);
+    }
+
+    /**
+     * Rule conditions: 1 = only on top of a solid block, 2 = only next to one, 3 = only under one; negative = the
+     * opposite (only where there is none). "Solid" means not looked through by the ground search (not air, plants...).
+     */
+    private boolean conditionMet(Level world, BlockPos pos) {
+        boolean positive = condition > 0;
+        switch (Math.abs(condition)) {
+            case 1:
+                return owner.isIgnoredBlock(world.getBlockState(pos.below())) != positive;
+            case 2:
+                boolean allIgnored = owner.isIgnoredBlock(world.getBlockState(pos.east())) && owner.isIgnoredBlock(world.getBlockState(pos.south()))
+                        && owner.isIgnoredBlock(world.getBlockState(pos.north())) && owner.isIgnoredBlock(world.getBlockState(pos.west()));
+                return allIgnored != positive;
+            case 3:
+                return owner.isIgnoredBlock(world.getBlockState(pos.above())) != positive;
+            default:
+                return true;
+        }
+    }
+
+    /** Conditions 1 and 2 are checked after the rest of the ruin is built (a torch needs its wall first). */
+    public boolean runLater() {
+        int c = Math.abs(condition);
+        return c == 1 || c == 2;
+    }
+
+    /** Conditions 3 and 7 run after the late ones. */
+    public boolean runLast() {
+        int c = Math.abs(condition);
+        return c == 3 || c == 7;
     }
 
     /**
@@ -201,9 +258,9 @@ public class RuinTemplateRule {
             // clobber existing tile entity block, if any
             BlockEntity existing_entity = world.getBlockEntity(position);
             if (existing_entity != null) {
-                world.setBlock(position, Blocks.AIR.defaultBlockState(), 3);
+                world.setBlock(position, Blocks.AIR.defaultBlockState(), PLACE_FLAGS);
             }
-            boolean success = world.setBlock(position, blockState, 3);
+            boolean success = world.setBlock(position, blockState, PLACE_FLAGS);
             if (!success) {
                 // there is a notable edge case where setting a block fails if the block is already equal, catch that
                 if (!world.getBlockState(position).is(blockState.getBlock())) {
