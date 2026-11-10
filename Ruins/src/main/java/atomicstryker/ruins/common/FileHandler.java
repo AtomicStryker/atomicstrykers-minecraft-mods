@@ -5,6 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
 
@@ -17,6 +18,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -226,12 +228,9 @@ class FileHandler {
                 enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
             } else if ((matcher = patternSpecificBiome.matcher(read)).matches()) {
                 boolean found = false;
-                HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
-                Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
-                for (Holder.Reference<Biome> biomeReference : biomeSet) {
-                    Biome bgb = biomeReference.value();
-                    Identifier rl = biomeReference.getKey().identifier();
-                    if (bgb != null && rl.getPath().equals(matcher.group(1))) {
+                for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
+                    Identifier rl = entry.getKey().identifier();
+                    if (rl.getPath().equals(matcher.group(1))) {
                         double[] val = vars.get(rl.getPath());
                         if (val != null) {
                             val[CHANCE] = Math.min(Math.max(Double.parseDouble(matcher.group(2)) / 100, 0), 1);
@@ -268,9 +267,9 @@ class FileHandler {
                     HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
                     Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
                     for (String biomeName : r.getBiomesToSpawnIn()) {
-                        for (Holder.Reference<Biome> biomeReference : biomeSet) {
-                            Identifier rl = biomeReference.getKey().identifier();
-                            if (rl.getPath().equals(biomeName)) {
+                        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
+                            bgb = entry.getValue();
+                            if (bgb != null && entry.getKey().identifier().getPath().equals(biomeName)) {
                                 if (!biomeName.equals(name)) {
                                     // if no template entry for this biome, create (empty) one
                                     if (!templates.containsKey(biomeName)) {
@@ -364,10 +363,11 @@ class FileHandler {
         pw.println("teblocks=");
         pw.println();
         // print all the biomes!
-        HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
-        Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
-        for (Holder.Reference<Biome> biomeReference : biomeSet) {
-            pw.println("specific_" + biomeReference.getKey().identifier().getPath() + "=75");
+        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
+            Biome bgb = entry.getValue();
+            if (bgb != null) {
+                pw.println("specific_" + entry.getKey().identifier().getPath() + "=75");
+            }
         }
         pw.flush();
         pw.close();

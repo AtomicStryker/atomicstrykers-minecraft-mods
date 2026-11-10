@@ -2,6 +2,12 @@ package atomicstryker.ruins.common;
 
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -10,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
@@ -28,6 +35,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.Set;
+import java.util.Map;
+import java.util.Collections;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -79,6 +89,22 @@ public class RuinsMod {
         }
         return null;
     }
+
+    /**
+     * All biomes of the running server. Since 1.19 biomes are data pack entries, ForgeRegistries.BIOMES does not
+     * contain them (not even vanilla's), so it can't be used to look up biome names.
+     */
+    public Set<Map.Entry<ResourceKey<Biome>, Biome>> getBiomeEntries() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            lastBiomeRegistry = server.registryAccess().lookupOrThrow(Registries.BIOME);
+        }
+        return lastBiomeRegistry != null ? lastBiomeRegistry.entrySet() : Collections.emptySet();
+    }
+
+    // the biome registry of the last running server, cached so biome lookups still work while no server is
+    // available (e.g. during shutdown)
+    private volatile Registry<Biome> lastBiomeRegistry;
 
     public static File getMinecraftBaseDir() {
         return FMLPaths.GAMEDIR.get().toFile();
@@ -151,10 +177,21 @@ public class RuinsMod {
         }
     }
 
-    private static void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
+    /** Ruins are centred on a random spot in the chunk, so a footprint up to ~52 blocks wide stays within 2 chunks. */
+    private final int chunkReadyRadius = 2;
 
-        if (!world.hasChunk(chunkPos.x(), chunkPos.z())) {
-            return;
+    private void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
+
+        // Only inspect a chunk once it and the chunks within chunkReadyRadius are fully generated. Reading blocks
+        // from a chunk that isn't would make the server thread generate it on the spot, and the site search reads the
+        // ground under the whole ruin, around this chunk. getChunkNow never loads anything (hasChunk is already true
+        // for a chunk that is only queued to load). An unready chunk isn't marked, so it is inspected again later.
+        for (int dx = -chunkReadyRadius; dx <= chunkReadyRadius; dx++) {
+            for (int dz = -chunkReadyRadius; dz <= chunkReadyRadius; dz++) {
+                if (world.getChunkSource().getChunkNow(chunkPos.x() + dx, chunkPos.z() + dz) == null) {
+                    return;
+                }
+            }
         }
 
         BlockPos ruinsMarkerBlockPos = new BlockPos(chunkPos.getMinBlockX(), world.getMinY(), chunkPos.getMinBlockZ());
@@ -162,7 +199,9 @@ public class RuinsMod {
         if (blockState.is(Blocks.BARRIER)) {
             return;
         }
-        world.setBlock(ruinsMarkerBlockPos, Blocks.BARRIER.defaultBlockState(), 3);
+        // no neighbour or shape updates: the marker is on the chunk's corner, so its neighbours are in the next chunks,
+        // and updating them would load (or generate) those. Nothing around a bottom-layer barrier needs updating.
+        world.setBlock(ruinsMarkerBlockPos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 
         LOGGER.trace("Ruins generation for chunk {}", chunkPos);
         if (world.dimension().identifier().getPath().equals("the_nether")) {
@@ -264,7 +303,7 @@ public class RuinsMod {
         }
     }
 
-    private static WorldHandle getWorldHandle(ServerLevel world) {
+    private WorldHandle getWorldHandle(ServerLevel world) {
         WorldHandle wh = null;
         if (!world.isClientSide()) {
             if (!instance.generatorMap.containsKey(world.dimension().identifier())) {
@@ -280,14 +319,15 @@ public class RuinsMod {
         return wh;
     }
 
-    private static void initWorldHandle(WorldHandle worldHandle, ServerLevel world) {
+    private void initWorldHandle(WorldHandle worldHandle, ServerLevel world) {
         // load in defaults
         try {
             File worlddir = getWorldSaveDir(world);
             LOGGER.info("Ruins mod determines World Save Dir to be at: {}", worlddir);
+            // must be set before FileHandler starts its loader thread, which parses the templates' block states with it
+            lastLoadedLevel = world;
             worldHandle.fileHandle = new FileHandler(worlddir, world.dimension().identifier());
             worldHandle.generator = new RuinGenerator(worldHandle.fileHandle, world);
-            instance.lastLoadedLevel = world;
 
         } catch (Exception e) {
             LOGGER.error("There was a problem loading the ruins mod:");

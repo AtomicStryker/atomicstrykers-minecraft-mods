@@ -2,11 +2,10 @@ package atomicstryker.ruins.common;
 
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -14,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.VegetationBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
@@ -26,10 +26,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class RuinTemplate {
 
@@ -103,12 +103,27 @@ public class RuinTemplate {
 
 
     public boolean isIgnoredBlock(BlockState blockState) {
-        return !blockState.isSolid() || preserveWater && blockState.is(Blocks.WATER) || preserveLava && blockState.is(Blocks.LAVA);
+        // water and lava count as ground, so templates can accept or refuse them as a surface
+        // (unacceptable_target_blocks=water), unless the template keeps them (preserve_water / preserve_lava).
+        // Checked before isSolid(), which is false for fluids.
+        if (blockState.is(Blocks.WATER)) {
+            return preserveWater;
+        }
+        if (blockState.is(Blocks.LAVA)) {
+            return preserveLava;
+        }
+        // trees are looked through like plants, so ruins are built on the ground under them, not on the treetops
+        // (leaves and logs are solid blocks)
+        if (blockState.is(BlockTags.LEAVES) || blockState.is(BlockTags.LOGS)) {
+            return true;
+        }
+        return !blockState.isSolid();
     }
 
     public boolean isAcceptableSurface(Level world, BlockState blockState, BlockPos pos) {
+        // the target block lists name blocks, so match any state of a listed block (flowing water, any stairs facing)
         for (BlockState b : deniedSurfaces) {
-            if (blockState == b) {
+            if (blockState.is(b.getBlock())) {
                 return false;
             }
         }
@@ -119,7 +134,7 @@ public class RuinTemplate {
         }
 
         for (BlockState b : acceptedSurfaces) {
-            if (blockState == b) {
+            if (blockState.is(b.getBlock())) {
                 return true;
             }
         }
@@ -338,7 +353,14 @@ public class RuinTemplate {
                             break;
                     }
                     curRule = rules.get(rulenum);
-                    curRule.doBlock(world, random, new BlockPos(x + x1, y + y_off, z + z1), rotate);
+                    BlockPos pos = new BlockPos(x + x1, y + y_off, z + z1);
+                    if (curRule.runLater() || curRule.runLast()) {
+                        // conditional rules wait until the rest is built; rule 0 fills the spot meanwhile
+                        (curRule.runLater() ? laterun : lastrun).add(new RuinRuleProcess(curRule, pos.getX(), pos.getY(), pos.getZ(), rotate));
+                        rules.get(0).doBlock(world, random, pos, rotate);
+                    } else {
+                        curRule.doBlock(world, random, pos, rotate);
+                    }
                 }
             }
 
@@ -377,6 +399,13 @@ public class RuinTemplate {
         }
         bonemealMarkers.clear();
 
+        // remove plants that this build left without ground (see removeUnsupportedPlants)
+        final int buffer = (leveling > 0 && lbuffer > 0) ? lbuffer : 0;
+        final int levelDepth = Math.max(leveling, 0);
+        removeUnsupportedPlants(world,
+                x - buffer, yReturn - levelDepth, z - buffer,
+                x + xDim - 1 + buffer, yReturn + Math.max(layers.size(), levelDepth) + 1, z + zDim - 1 + buffer);
+
         for (AdjoiningTemplateData ad : adjoiningTemplates) {
             RuinsMod.LOGGER.info("Considering to spawn adjoining {} of Ruin {}...", ad.adjoiningTemplate.getName(), getName());
             float randres = (world.getRandom().nextFloat() * 100);
@@ -398,6 +427,40 @@ public class RuinTemplate {
 
         NeoForge.EVENT_BUS.post(new EventRuinTemplateSpawn(world, this, xBase, yReturn, zBase, rotate, is_player, false));
         return yReturn;
+    }
+
+    /**
+     * Templates are placed without block or shape updates (RuinTemplateRule.PLACE_FLAGS), so that torches, ladders and
+     * crops don't break while the blocks around them are still missing. Because of that, a plant that was already
+     * standing in the world (grass, flowers, tall grass) is never told when the template puts air or a lower floor under
+     * it, and would stay floating in the ruin.
+     * <p>
+     * This runs once the whole ruin is built and removes only plants ({@link VegetationBlock}: grass, flowers, ferns,
+     * double plants, saplings, mushrooms, crops...) that can no longer survive where they are. Going bottom to top means
+     * the upper half of a double plant is checked after its lower half is gone, so it is removed too. Blocks the
+     * template placed on valid ground (crops on farmland, flowers on grass) still survive and are left alone.
+     */
+    private void removeUnsupportedPlants(Level world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        final int bottom = Math.max(minY, world.getMinY());
+        final int top = Math.min(maxY, world.getMaxY());
+        final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        int removed = 0;
+        for (int yi = bottom; yi <= top; yi++) {
+            for (int xi = minX; xi <= maxX; xi++) {
+                for (int zi = minZ; zi <= maxZ; zi++) {
+                    pos.set(xi, yi, zi);
+                    BlockState state = world.getBlockState(pos);
+                    if (state.getBlock() instanceof VegetationBlock && !state.canSurvive(world, pos)) {
+                        // keep water if the plant was waterlogged / underwater (seagrass etc.)
+                        world.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                        removed++;
+                    }
+                }
+            }
+        }
+        if (removed > 0) {
+            RuinsMod.LOGGER.debug("removed {} unsupported plants in [{}|{}|{}] to [{}|{}|{}]", removed, minX, bottom, minZ, maxX, top, maxZ);
+        }
     }
 
     // try to recover the original acceptable surface block or suitable substitute, if any
@@ -743,10 +806,9 @@ public class RuinTemplate {
         // 1) biomes listed as biomesToSpawnIn are added (regardless of biomesToNotSpawnIn)
         // 2) biomes listed as biomesToNotSpawnIn are not added (regardless of biomeTypesToSpawnIn)
         // 3) biomes satisfying at least one biomeTypesToSpawnIn criterion are added
-        HolderLookup.RegistryLookup<Biome> biomeRegistryLookup = RuinsMod.getInstance().getLastLoadedLevel().registryAccess().lookupOrThrow(Registries.BIOME);
-        Set<Holder.Reference<Biome>> biomeSet = biomeRegistryLookup.listElements().collect(Collectors.toSet());
-        for (Holder.Reference<Biome> biomeReference : biomeSet) {
-            String biome_name = biomeReference.getKey().identifier().getPath();
+        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
+            Biome biome = entry.getValue();
+            String biome_name = entry.getKey().identifier().getPath();
             if (!biomes.contains(biome_name)) {
                 if (included_biomes.contains(biome_name)) {
                     biomes.add(biome_name);
