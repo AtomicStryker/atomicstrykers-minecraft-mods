@@ -5,8 +5,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -103,11 +101,9 @@ class FileHandler {
              * dynamic Biome config loader, gets all information straight from
              * Biome
              */
-            Biome bgb;
-            IForgeRegistry<Biome> biomeRegistry = ForgeRegistries.BIOMES;
-            for (ResourceLocation rl : biomeRegistry.getKeys()) {
-                bgb = biomeRegistry.getValue(rl);
-                if (bgb != null) {
+            for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
+                ResourceLocation rl = entry.getKey().location();
+                {
                     try {
                         loadSpecificTemplates(templPath, rl.getPath());
                         // pw.println("Loaded " + bgb.biomeName + " ruins templates, biomeID " + bgb.biomeID);
@@ -228,11 +224,9 @@ class FileHandler {
                 enableFixedWidthRuleIds = Boolean.parseBoolean(check[1]);
             } else if ((matcher = patternSpecificBiome.matcher(read)).matches()) {
                 boolean found = false;
-                Biome bgb;
-                IForgeRegistry<Biome> biomeRegistry = ForgeRegistries.BIOMES;
-                for (ResourceLocation rl : biomeRegistry.getKeys()) {
-                    bgb = biomeRegistry.getValue(rl);
-                    if (bgb != null && rl.getPath().equals(matcher.group(1))) {
+                for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
+                    ResourceLocation rl = entry.getKey().location();
+                    if (rl.getPath().equals(matcher.group(1))) {
                         double[] val = vars.get(rl.getPath());
                         if (val != null) {
                             val[CHANCE] = Math.min(Math.max(Double.parseDouble(matcher.group(2)) / 100, 0), 1);
@@ -268,7 +262,7 @@ class FileHandler {
                     }
                     targetList.add(r);
                     for (String biomeName : r.getBiomesToSpawnIn()) {
-                        for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
+                        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
                             bgb = entry.getValue();
                             if (bgb != null && entry.getKey().location().getPath().equals(biomeName)) {
                                 if (!biomeName.equals(name)) {
@@ -364,7 +358,7 @@ class FileHandler {
         pw.println("teblocks=");
         pw.println();
         // print all the biomes!
-        for (Map.Entry<ResourceKey<Biome>, Biome> entry : ForgeRegistries.BIOMES.getEntries()) {
+        for (Map.Entry<ResourceKey<Biome>, Biome> entry : RuinsMod.getInstance().getBiomeEntries()) {
             Biome bgb = entry.getValue();
             if (bgb != null) {
                 pw.println("specific_" + entry.getKey().location().getPath() + "=75");
