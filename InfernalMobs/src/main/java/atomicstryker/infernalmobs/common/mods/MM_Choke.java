@@ -3,6 +3,7 @@ package atomicstryker.infernalmobs.common.mods;
 import atomicstryker.infernalmobs.common.InfernalMobsCore;
 import atomicstryker.infernalmobs.common.MobModifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -68,7 +69,7 @@ public class MM_Choke extends MobModifier {
 
     @Override
     public float onHurt(LivingEntity mob, DamageSource source, float damage) {
-        if (lastTarget != null && source.getDirectEntity() == lastTarget && lastAir != RESET_AIR_VALUE) {
+        if (lastTarget != null && source.getEntity() == lastTarget && lastAir != RESET_AIR_VALUE) {
             lastAir += 60;
             if (lastAir > lastTarget.getMaxAirSupply()) {
                 lastAir = lastTarget.getMaxAirSupply();
@@ -90,7 +91,14 @@ public class MM_Choke extends MobModifier {
     }
 
     private void updateAir() {
-        lastTarget.setAirSupply(lastAir);
+        if (lastAir == RESET_AIR_VALUE) {
+            // RESET_AIR_VALUE only marks "not choking" here, it must never become the victim's air:
+            // Forge's LivingBreatheEvent drowning check hurts any entity whose air is -20 or lower, even out of water,
+            // and air only refills a few points per tick now, so -999 caused delayed drowning damage after a choke ended
+            restoreAir(lastTarget);
+        } else {
+            lastTarget.setAirSupply(lastAir);
+        }
         if (lastTarget instanceof ServerPlayer) {
             InfernalMobsCore.instance().sendAirPacket((ServerPlayer) lastTarget, lastAir);
             InfernalMobsCore.instance().getModifiedPlayerTimes().put(lastTarget.getName().getString(), System.currentTimeMillis());
@@ -99,7 +107,19 @@ public class MM_Choke extends MobModifier {
 
     @Override
     public void resetModifiedVictim(Player victim) {
-        victim.setAirSupply(RESET_AIR_VALUE);
+        restoreAir(victim);
+    }
+
+    /**
+     * Ends the choke without hurting the victim: out of water air comes back right away (like it did when vanilla
+     * refilled it every tick), underwater it only stops being negative so normal drowning carries on from there.
+     */
+    private static void restoreAir(LivingEntity victim) {
+        if (victim.isEyeInFluid(FluidTags.WATER)) {
+            victim.setAirSupply(Math.max(victim.getAirSupply(), 0));
+        } else {
+            victim.setAirSupply(victim.getMaxAirSupply());
+        }
     }
 
     @Override

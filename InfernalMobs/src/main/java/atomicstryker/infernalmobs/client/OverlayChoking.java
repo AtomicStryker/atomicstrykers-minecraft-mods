@@ -51,7 +51,9 @@ public class OverlayChoking implements ForgeLayer {
         }
 
         // modded Gui.renderPlayerHealth 'air' section
-        if (!mc.player.isEyeInFluid(FluidTags.WATER) && airOverrideValue != -999) {
+        // the vanilla/Forge air bar already shows whenever air is below max (unlike 1.12, where it only showed
+        // underwater), and the victim's real air is synced to the client, so only draw when it isn't showing
+        if (!mc.player.isEyeInFluid(FluidTags.WATER) && mc.player.getAirSupply() >= mc.player.getMaxAirSupply() && airOverrideValue != -999) {
 
             int leftScreenCoordinate = mc.getWindow().getGuiScaledWidth() / 2 + 91;
             int topScreenCoordinate = mc.getWindow().getGuiScaledHeight() - 59;
