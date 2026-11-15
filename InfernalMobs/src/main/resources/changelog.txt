@@ -1,3 +1,7 @@
+26.3.2NF
+- fix Choke hurting players after it ends and drawing a second air bar (#577), thanks to Flankrat
+- updated to neoforge 26.3.0.103
+
 26.3.1NF
 - updated to MC 26.3 with neoforge 26.3.0.7-beta
 

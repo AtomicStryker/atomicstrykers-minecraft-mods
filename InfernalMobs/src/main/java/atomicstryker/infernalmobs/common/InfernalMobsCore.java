@@ -29,7 +29,6 @@ import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
 import atomicstryker.infernalmobs.common.mods.MM_Weakness;
 import atomicstryker.infernalmobs.common.mods.MM_Webber;
 import atomicstryker.infernalmobs.common.mods.MM_Wither;
-import atomicstryker.infernalmobs.common.network.AirPacket;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.KnockBackPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
@@ -52,7 +51,6 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -803,13 +801,6 @@ public class InfernalMobsCore {
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
         HealthPacket healthPacket = new HealthPacket(playerName, mob.getId(), 0f, 0f);
         ClientPacketDistributor.sendToServer(healthPacket);
-    }
-
-    public void sendAirPacket(ServerPlayer target, int lastAir) {
-        if (getIsEntityAllowedTarget(target)) {
-            AirPacket airPacket = new AirPacket(lastAir);
-            PacketDistributor.sendToPlayer(target, airPacket);
-        }
     }
 
     @SubscribeEvent
