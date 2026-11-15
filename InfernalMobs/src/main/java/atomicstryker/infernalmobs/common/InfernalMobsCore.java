@@ -29,7 +29,6 @@ import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
 import atomicstryker.infernalmobs.common.mods.MM_Weakness;
 import atomicstryker.infernalmobs.common.mods.MM_Webber;
 import atomicstryker.infernalmobs.common.mods.MM_Wither;
-import atomicstryker.infernalmobs.common.network.AirPacket;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.KnockBackPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
@@ -124,7 +123,7 @@ public class InfernalMobsCore {
         MinecraftForge.EVENT_BUS.register(new EntityEventHandler());
         MinecraftForge.EVENT_BUS.register(new SaveEventHandler());
 
-        networkHelper = new NetworkHelper("infernalmobs", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class, AirPacket.class);
+        networkHelper = new NetworkHelper("infernalmobs", MobModsPacket.class, HealthPacket.class, VelocityPacket.class, KnockBackPacket.class);
 
         LOGGER = LogManager.getLogger();
     }
@@ -737,12 +736,6 @@ public class InfernalMobsCore {
 
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
         networkHelper.sendPacketToServer(new HealthPacket(playerName, mob.getId(), 0f, 0f));
-    }
-
-    public void sendAirPacket(ServerPlayer target, int lastAir) {
-        if (getIsEntityAllowedTarget(target)) {
-            networkHelper.sendPacketToPlayer(new AirPacket(lastAir), target);
-        }
     }
 
     @SubscribeEvent
