@@ -99,7 +99,6 @@ public class MM_Choke extends MobModifier {
             lastTarget.setAirSupply(lastAir);
         }
         if (lastTarget instanceof ServerPlayer) {
-            InfernalMobsCore.instance().sendAirPacket((ServerPlayer) lastTarget, lastAir);
             InfernalMobsCore.instance().getModifiedPlayerTimes().put(lastTarget.getName().getString(), System.currentTimeMillis());
         }
     }
@@ -113,7 +112,7 @@ public class MM_Choke extends MobModifier {
      * Ends the choke without hurting the victim: out of water air comes back right away (like it did when vanilla
      * refilled it every tick), underwater it only stops being negative so normal drowning carries on from there.
      */
-    private static void restoreAir(LivingEntity victim) {
+    private void restoreAir(LivingEntity victim) {
         if (victim.isEyeInFluid(FluidTags.WATER)) {
             victim.setAirSupply(Math.max(victim.getAirSupply(), 0));
         } else {
