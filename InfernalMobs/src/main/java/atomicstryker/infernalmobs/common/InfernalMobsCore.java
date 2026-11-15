@@ -39,8 +39,8 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.EnchantmentTags;
@@ -51,6 +51,7 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -144,7 +145,6 @@ public class InfernalMobsCore {
         registrar.playBidirectional(MobModsPacket.TYPE, MobModsPacket.STREAM_CODEC,
                 instance()::onMobModsPacket, instance()::onMobModsPacketForClient);
 
-        registrar.playToClient(AirPacket.TYPE, AirPacket.STREAM_CODEC, instance()::onAirPacketForClient);
         registrar.playToClient(VelocityPacket.TYPE, VelocityPacket.STREAM_CODEC, instance()::onVelocityPacketForClient);
         registrar.playToClient(KnockBackPacket.TYPE, KnockBackPacket.STREAM_CODEC, instance()::onKnockBackPacketForClient);
     }
@@ -164,12 +164,6 @@ public class InfernalMobsCore {
     private void onMobModsPacketForClient(MobModsPacket mobModsPacket, IPayloadContext playPayloadContext) {
         if (FMLEnvironment.getDist().isClient()) {
             InfernalMobsClient.instance().onMobModsPacketToClient(mobModsPacket, playPayloadContext);
-        }
-    }
-
-    private void onAirPacketForClient(AirPacket airPacket, IPayloadContext playPayloadContext) {
-        if (FMLEnvironment.getDist().isClient()) {
-            InfernalMobsClient.instance().onAirPacket(airPacket, playPayloadContext);
         }
     }
 
