@@ -28,7 +28,6 @@ import atomicstryker.infernalmobs.common.mods.MM_Vengeance;
 import atomicstryker.infernalmobs.common.mods.MM_Weakness;
 import atomicstryker.infernalmobs.common.mods.MM_Webber;
 import atomicstryker.infernalmobs.common.mods.MM_Wither;
-import atomicstryker.infernalmobs.common.network.AirPacket;
 import atomicstryker.infernalmobs.common.network.HealthPacket;
 import atomicstryker.infernalmobs.common.network.KnockBackPacket;
 import atomicstryker.infernalmobs.common.network.MobModsPacket;
@@ -137,12 +136,6 @@ public class InfernalMobsCore {
             .decoder(KnockBackPacket::decode)
             .encoder(KnockBackPacket::encode)
             .consumerNetworkThread(KnockBackPacket::handle)
-            .add()
-
-            .messageBuilder(AirPacket.class)
-            .decoder(AirPacket::decode)
-            .encoder(AirPacket::encode)
-            .consumerNetworkThread(AirPacket::handle)
             .add();
 
     public InfernalMobsCore() {
@@ -747,12 +740,6 @@ public class InfernalMobsCore {
     public void sendHealthRequestPacket(String playerName, LivingEntity mob) {
         networkChannel.send(new HealthPacket(playerName, mob.getId(), 0f, 0f),
                 PacketDistributor.SERVER.noArg());
-    }
-
-    public void sendAirPacket(ServerPlayer target, int lastAir) {
-        if (getIsEntityAllowedTarget(target)) {
-            networkChannel.send(new AirPacket(lastAir), PacketDistributor.PLAYER.with(target));
-        }
     }
 
     @SubscribeEvent
