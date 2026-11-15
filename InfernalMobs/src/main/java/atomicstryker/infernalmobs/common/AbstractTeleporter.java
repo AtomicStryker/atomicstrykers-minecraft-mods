@@ -5,7 +5,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
 
 public abstract class AbstractTeleporter extends MobModifier {
 
@@ -75,10 +74,6 @@ public abstract class AbstractTeleporter extends MobModifier {
     protected void playDestinationEffects(LivingEntity mob) {
         mob.level().playSound(null, mob.xo, mob.yo, mob.zo, SoundEvents.ENDERMAN_TELEPORT, mob.getSoundSource(), 1.0F, 1.0F);
         mob.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
-    }
-
-    protected EntityTeleportEvent.EntityRandom getForgeEvent(LivingEntity mob, double x, double y, double z) {
-        return new EntityTeleportEvent.EntityRandom(mob, x, y, z);
     }
 
 }

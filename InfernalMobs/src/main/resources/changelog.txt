@@ -1,3 +1,7 @@
+26.3.2
+- fix Choke hurting players after it ends and drawing a second air bar (#577), thanks to Flankrat
+- updated to Forge 66.1.8 (eventbus changes)
+
 26.3.1
 - updated for MC 26.3 and Forge 66.0.2
 
