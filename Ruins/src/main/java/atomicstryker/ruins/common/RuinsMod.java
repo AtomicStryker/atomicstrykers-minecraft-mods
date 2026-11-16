@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -278,10 +279,14 @@ public class RuinsMod {
         CommandBlockEntity tecb;
         ArrayList<CommandBlockEntity> tecblist = new ArrayList<>();
 
+        ServerLevel level = (ServerLevel) event.getEntity().level();
         for (int xoffset = -4; xoffset <= 4; xoffset++) {
             for (int zoffset = -4; zoffset <= 4; zoffset++) {
-                if (event.getEntity().level().hasChunk(event.getNewPos().x() + xoffset, event.getNewPos().z() + zoffset)) {
-                    for (BlockEntity teo : event.getEntity().level().getChunk(event.getNewPos().x() + xoffset, event.getNewPos().z() + zoffset).getBlockEntities().values()) {
+                // only chunks that are already fully loaded: hasChunk is also true for chunks that are still loading
+                // or generating, and getChunk would then make the server thread wait for them to finish
+                LevelChunk chunk = level.getChunkSource().getChunkNow(event.getNewPos().x() + xoffset, event.getNewPos().z() + zoffset);
+                if (chunk != null) {
+                    for (BlockEntity teo : chunk.getBlockEntities().values()) {
                         if (teo instanceof CommandBlockEntity) {
                             tecb = (CommandBlockEntity) teo;
                             if (tecb.getCommandBlock().getCommand().startsWith("RUINSTRIGGER ")) {
