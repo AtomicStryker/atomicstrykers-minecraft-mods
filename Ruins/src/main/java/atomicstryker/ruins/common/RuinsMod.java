@@ -3,14 +3,12 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -18,11 +16,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.CommandBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -33,16 +33,17 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.Set;
-import java.util.Map;
-import java.util.Collections;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Mod(RuinsMod.MOD_ID)
@@ -281,10 +282,14 @@ public class RuinsMod {
         CommandBlockEntity tecb;
         ArrayList<CommandBlockEntity> tecblist = new ArrayList<>();
 
+        ServerLevel level = (ServerLevel) entity.level();
         for (int xoffset = -4; xoffset <= 4; xoffset++) {
             for (int zoffset = -4; zoffset <= 4; zoffset++) {
-                if (entity.level().hasChunk(newPos.x() + xoffset, newPos.z() + zoffset)) {
-                    for (BlockEntity teo : entity.level().getChunk(newPos.x() + xoffset, newPos.z() + zoffset).getBlockEntities().values()) {
+                // only chunks that are already fully loaded: hasChunk is also true for chunks that are still loading
+                // or generating, and getChunk would then make the server thread wait for them to finish
+                LevelChunk chunk = level.getChunkSource().getChunkNow(newPos.x() + xoffset, newPos.z() + zoffset);
+                if (chunk != null) {
+                    for (BlockEntity teo : chunk.getBlockEntities().values()) {
                         if (teo instanceof CommandBlockEntity) {
                             tecb = (CommandBlockEntity) teo;
                             if (tecb.getCommandBlock().getCommand().startsWith("RUINSTRIGGER ")) {
