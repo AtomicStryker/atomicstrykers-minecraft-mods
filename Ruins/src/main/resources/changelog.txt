@@ -676,3 +676,6 @@ a: setAccessible now true
 + merge PR https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/576 by Flankrat and Claude
 + fix biome ruins never spawning, ruins on the sea floor, no Nether ruins, ignored rule chance/conditions, broken torches
 
+26.3.3NF
++ merge PR https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/579 by Flankrat and Claude
++ fixes ruins chunk exploration causing chunk generation stops on the server thread
