@@ -182,7 +182,9 @@ public class RuinsMod {
         }
     }
 
-    /** Ruins are centred on a random spot in the chunk, so a footprint up to ~52 blocks wide stays within 2 chunks. */
+    /**
+     * Ruins are centred on a random spot in the chunk, so a footprint up to ~52 blocks wide stays within 2 chunks.
+     */
     private final int chunkReadyRadius = 2;
 
     private void inspectChunk(ServerLevel world, ChunkPos chunkPos, WorldHandle worldHandle) {
