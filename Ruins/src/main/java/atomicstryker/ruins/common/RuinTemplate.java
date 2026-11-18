@@ -4,8 +4,10 @@ package atomicstryker.ruins.common;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -101,6 +103,10 @@ public class RuinTemplate {
     }
 
 
+    // blocks the ground search looks through like trees, for blocks that aren't tagged as leaves or logs
+    // (e.g. the solid shell around Dynamic Trees' thick trunks); data packs can add more
+    private static final TagKey<Block> NOT_GROUND = BlockTags.create(new ResourceLocation(RuinsMod.MOD_ID, "not_ground"));
+
     public boolean isIgnoredBlock(BlockState blockState) {
         // water and lava count as ground, so templates can accept or refuse them as a surface
         // (unacceptable_target_blocks=water), unless the template keeps them (preserve_water / preserve_lava).
@@ -113,7 +119,7 @@ public class RuinTemplate {
         }
         // trees are looked through like plants, so ruins are built on the ground under them, not on the treetops
         // (leaves and logs are solid blocks)
-        if (blockState.is(BlockTags.LEAVES) || blockState.is(BlockTags.LOGS)) {
+        if (blockState.is(BlockTags.LEAVES) || blockState.is(BlockTags.LOGS) || blockState.is(NOT_GROUND)) {
             return true;
         }
         return !blockState.isSolid();
