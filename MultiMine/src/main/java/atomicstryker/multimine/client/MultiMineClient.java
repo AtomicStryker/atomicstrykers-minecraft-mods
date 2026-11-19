@@ -32,7 +32,6 @@ import java.lang.reflect.Field;
 public class MultiMineClient {
     private static MultiMineClient instance = null;
     private static Minecraft mc;
-    private static Player thePlayer;
     private final PartiallyMinedBlock[] partiallyMinedBlocksArray = new PartiallyMinedBlock[30];
 
     // reflects into: float MultiPlayerGameMode.destroyProgress
@@ -106,15 +105,13 @@ public class MultiMineClient {
             return;
         }
 
-        thePlayer = player;
-
         if (!destroyProgressFieldFound()) {
             // on the very first blockbreak tick, we cant tell which is the target field
             MultiMine.instance().debugPrint("reflection into destroyProgress not ready, aborting");
             return;
         }
 
-        BlockEntity blockentity = thePlayer.level().getBlockEntity(pos);
+        BlockEntity blockentity = player.level().getBlockEntity(pos);
         if (blockentity instanceof Container) {
             // if its any kind of chest or container, just nope out
             MultiMine.instance().debugPrint("aborting because its a container block");
@@ -123,7 +120,7 @@ public class MultiMineClient {
 
         // use reflection to read MultiPlayerGameMode.destroyProgress
         float destroyProgressVanilla = getVanillaDestroyProgressValue();
-        MultiMine.instance().debugPrint("client {} clicked block {}, destroyProgress {}, lastBlockCompletion {}", thePlayer, pos, destroyProgressVanilla, lastBlockCompletion);
+        MultiMine.instance().debugPrint("client {} clicked block {}, destroyProgress {}, lastBlockCompletion {}", player, pos, destroyProgressVanilla, lastBlockCompletion);
 
         boolean cachedProgressWasAhead = false;
         // see if we have multimine completion cached somewhere
@@ -147,7 +144,7 @@ public class MultiMineClient {
                 lastBlockCompletion = 0;
             } else if (destroyProgressVanilla > lastBlockCompletion) {
                 MultiMine.instance().debugPrint("client has block progress for: [{}], actual completion: {}, lastCompletion: {}", pos, destroyProgressVanilla, lastBlockCompletion);
-                MultiMine.networkChannel.send(new PartialBlockPacket(thePlayer.getScoreboardName(), lastClickedBlock.getX(),
+                MultiMine.networkChannel.send(new PartialBlockPacket(player.getScoreboardName(), lastClickedBlock.getX(),
                                 lastClickedBlock.getY(), lastClickedBlock.getZ(), destroyProgressVanilla, false),
                         PacketDistributor.SERVER.noArg());
                 MultiMine.instance().debugPrint("sent block progress packet to server: {}", destroyProgressVanilla);
@@ -214,6 +211,7 @@ public class MultiMineClient {
      * @param z coordinate of Block being mined
      */
     private void renderBlockDigParticles(int x, int y, int z) {
+        Player thePlayer = mc.player;
         Level world = thePlayer.level();
         BlockPos bp = new BlockPos(x, y, z);
         BlockState state = world.getBlockState(bp);
@@ -235,7 +233,7 @@ public class MultiMineClient {
      * @param regenerating true when the block mining progress is reversing
      */
     public void onServerSentPartialBlockData(int x, int y, int z, float progress, boolean regenerating) {
-        if (thePlayer == null) {
+        if (mc == null || mc.player == null) {
             return;
         }
 
@@ -247,7 +245,7 @@ public class MultiMineClient {
 
         BlockPos pos = new BlockPos(x, y, z);
 
-        final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, thePlayer.level().dimension(), progress);
+        final PartiallyMinedBlock newBlock = new PartiallyMinedBlock(x, y, z, mc.player.level().dimension(), progress);
         PartiallyMinedBlock iterBlock;
         int freeIndex = -1;
 

@@ -1,3 +1,7 @@
+
+- https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/580
+- fixes stale world memory being kept by multi mine when quitting a world (until mining a block in another world), thanks to Flankrat and Claude
+
 26.3.1
 - updated for MC 26.3 and Forge 66.0.2
 
