@@ -9,9 +9,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -307,27 +305,6 @@ public class MultiMineClient {
             if (arrayOverWriteIndex == partiallyMinedBlocksArray.length) {
                 arrayOverWriteIndex = 0;
             }
-        }
-    }
-
-    /**
-     * Helper method to emulate vanilla behaviour of damaging your Item as you finish mining a Block.
-     *
-     * @param player Player doing the mining
-     * @param x      Coordinates of the Block
-     * @param y      Coordinates of the Block
-     * @param z      Coordinates of the Block
-     */
-    private void onBlockMineFinishedDamagePlayerItem(Player player, int x, int y, int z) {
-        if (x != this.lastClickedBlock.getX() || y != lastClickedBlock.getY() || z != lastClickedBlock.getZ()) {
-            return;
-        }
-
-        ItemStack itemStack = player.getMainHandItem();
-        BlockPos pos = new BlockPos(x, y, z);
-        itemStack.mineBlock(player.level(), player.level().getBlockState(pos), pos, player);
-        if (itemStack.getCount() == 0) {
-            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
     }
 
