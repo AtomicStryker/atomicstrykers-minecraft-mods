@@ -2,7 +2,6 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ProblemReporter;
@@ -183,11 +182,11 @@ public class RuinTemplateRule {
      */
     private byte extractPlace(byte defaultValue, CompoundTag parameters) {
         byte place = defaultValue;
-        if (parameters.contains(PARAMETER_PLACE_TAG, Tag.TAG_STRING)) {
-            String value = parameters.getString(PARAMETER_PLACE_TAG);
-            if (value.equals("background")) {
+        if (parameters.contains(PARAMETER_PLACE_TAG)) {
+            String value = parameters.getStringOr(PARAMETER_PLACE_TAG, "");
+            if ("background".equals(value)) {
                 place = PLACE_BACKGROUND;
-            } else if (value.equals("foreground")) {
+            } else if ("foreground".equals(value)) {
                 place = PLACE_FOREGROUND;
             } else {
                 return place;
