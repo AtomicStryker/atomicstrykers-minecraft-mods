@@ -2,10 +2,12 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -15,11 +17,11 @@ import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RuinTemplateRule {
 
@@ -27,6 +29,10 @@ public class RuinTemplateRule {
     private final CompoundTag[] tileEntityData;
     private final double[] blockWeights;
     private final int[] blockBonemeals;
+    // where each block may go: PLACE_ANYWHERE, PLACE_BACKGROUND or PLACE_FOREGROUND (Ruins parameter "place")
+    private final byte[] placePolicies;
+    // true where the block is the pseudo-block "ruins:end_crystal"
+    private final boolean[] endCrystals;
     private final RuinTemplate owner;
     private final boolean excessiveDebugging;
     private double blockWeightsTotal;
@@ -44,6 +50,12 @@ public class RuinTemplateRule {
     private static final int PLACE_FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
     private static final String NAME_TAG = "Name";
     private static final String NULL_BLOCK_NAME = "ruins:null";
+    private static final String END_CRYSTAL_BLOCK_NAME = "ruins:end_crystal";
+
+    private static final byte PLACE_ANYWHERE = 0;
+    private static final byte PLACE_BACKGROUND = 1;
+    private static final byte PLACE_FOREGROUND = 2;
+    private static final String PARAMETER_PLACE_TAG = "place";
 
     public RuinTemplateRule(RuinTemplate r, String rule, boolean debug) {
         owner = r;
@@ -61,6 +73,8 @@ public class RuinTemplateRule {
             blockStates = new BlockState[0];
             blockWeights = new double[0];
             blockBonemeals = new int[0];
+            placePolicies = new byte[0];
+            endCrystals = new boolean[0];
             tileEntityData = new CompoundTag[0];
             return;
         }
@@ -68,6 +82,8 @@ public class RuinTemplateRule {
         blockStates = new BlockState[numblocks];
         blockWeights = new double[numblocks];
         blockBonemeals = new int[numblocks];
+        placePolicies = new byte[numblocks];
+        endCrystals = new boolean[numblocks];
         tileEntityData = new CompoundTag[numblocks];
         blockWeightsTotal = 0;
         for (int i = 0; i < numblocks; i++) {
@@ -77,11 +93,13 @@ public class RuinTemplateRule {
             // extract and strip Ruins-specific parameters
             double blockWeight = 1;
             int blockBonemeal = 0;
+            byte placePolicy = PLACE_ANYWHERE;
             CompoundTag blockEntity = null;
             if (stateCompound.contains(PARAMETERS_TAG)) {
                 CompoundTag parameters = stateCompound.getCompoundOrEmpty(PARAMETERS_TAG);
                 blockWeight = extractWeight(blockWeight, parameters);
                 blockBonemeal = extractBonemeal(blockBonemeal, parameters);
+                placePolicy = extractPlace(placePolicy, parameters);
                 blockEntity = extractEntity(blockEntity, parameters);
                 if (!parameters.isEmpty()) {
                     RuinsMod.LOGGER.warn("ignoring invalid Ruins parameters {} in rule {}", () -> parameters.keySet().toString(), () -> rule);
@@ -90,6 +108,7 @@ public class RuinTemplateRule {
             }
             blockWeightsTotal += blockWeights[i] = blockWeight;
             blockBonemeals[i] = blockBonemeal;
+            placePolicies[i] = placePolicy;
 
             if (stateCompound.getString(NAME_TAG).equals(NULL_BLOCK_NAME)) {
                 // pseudo-block "ruins:null" leaves existing block at this position intact
@@ -98,6 +117,15 @@ public class RuinTemplateRule {
 
                 if (excessiveDebugging) {
                     RuinsMod.LOGGER.info("rule alternative: {}, {}", i + 1, NULL_BLOCK_NAME);
+                }
+            } else if (stateCompound.getString(NAME_TAG).equals(END_CRYSTAL_BLOCK_NAME)) {
+                // pseudo-block "ruins:end_crystal" places bedrock with an end crystal, like the old "EnderCrystal"
+                blockStates[i] = null;
+                tileEntityData[i] = null;
+                endCrystals[i] = true;
+
+                if (excessiveDebugging) {
+                    RuinsMod.LOGGER.info("rule alternative: {}, {}", i + 1, END_CRYSTAL_BLOCK_NAME);
                 }
             } else {
                 blockStates[i] = RuleStringNbtHelper.blockStateFromCompound(stateCompound);
@@ -142,6 +170,31 @@ public class RuinTemplateRule {
             }
         }
         return bonemeal;
+    }
+
+    /**
+     * Gets the Ruins place parameter. "background" (the old "?" prefix) only replaces blocks the ground search counts
+     * as ground, "foreground" (the old "!" prefix) only goes where the ground search looks through (air, plants, trees,
+     * water/lava kept by preserve_water/preserve_lava). Any other value is left in place and reported as invalid.
+     *
+     * @param defaultValue place policy to use when the parameter is missing or invalid
+     * @param parameters   the block's Ruins parameters; a valid place parameter is removed from them
+     * @return PLACE_BACKGROUND, PLACE_FOREGROUND or defaultValue
+     */
+    private byte extractPlace(byte defaultValue, CompoundTag parameters) {
+        byte place = defaultValue;
+        if (parameters.contains(PARAMETER_PLACE_TAG, Tag.TAG_STRING)) {
+            String value = parameters.getString(PARAMETER_PLACE_TAG);
+            if (value.equals("background")) {
+                place = PLACE_BACKGROUND;
+            } else if (value.equals("foreground")) {
+                place = PLACE_FOREGROUND;
+            } else {
+                return place;
+            }
+            parameters.remove(PARAMETER_PLACE_TAG);
+        }
+        return place;
     }
 
     private static final String PARAMETER_ENTITY_TAG = "entity";
@@ -226,6 +279,13 @@ public class RuinTemplateRule {
     }
 
     private void handleBlockSpawning(Level world, RandomSource random, BlockPos pos, int blocknum, int rotate) {
+        if (!placeAllowed(world, pos, placePolicies[blocknum])) {
+            return;
+        }
+        if (endCrystals[blocknum]) {
+            spawnEndCrystal(world, random, pos);
+            return;
+        }
         BlockState blockState = blockStates[blocknum];
         if (blockState != null) {
             // use vanilla rotation - lets see how this goes
@@ -239,6 +299,27 @@ public class RuinTemplateRule {
                 owner.markBlockForBonemeal(pos, bonemeal);
             }
         }
+    }
+
+    /**
+     * Background blocks only replace ground, foreground blocks only go where the ground search looks through.
+     */
+    private boolean placeAllowed(Level world, BlockPos pos, byte placePolicy) {
+        if (placePolicy == PLACE_ANYWHERE) {
+            return true;
+        }
+        boolean lookedThrough = owner.isIgnoredBlock(world.getBlockState(pos));
+        return placePolicy == PLACE_BACKGROUND ? !lookedThrough : lookedThrough;
+    }
+
+    /**
+     * Places bedrock with an end crystal in the same spot, the same way the old "EnderCrystal" block placed it.
+     */
+    private void spawnEndCrystal(Level world, RandomSource random, BlockPos pos) {
+        realizeBlock(world, pos, Blocks.BEDROCK.defaultBlockState(), null);
+        EndCrystal crystal = new EndCrystal(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        crystal.setYRot(random.nextFloat() * 360.0F);
+        world.addFreshEntity(crystal);
     }
 
     private int getBlockNum(RandomSource random) {
