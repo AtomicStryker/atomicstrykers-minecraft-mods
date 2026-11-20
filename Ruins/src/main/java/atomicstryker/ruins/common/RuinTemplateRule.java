@@ -2,6 +2,7 @@ package atomicstryker.ruins.common;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -53,6 +54,7 @@ public class RuinTemplateRule {
     private static final byte PLACE_ANYWHERE = 0;
     private static final byte PLACE_BACKGROUND = 1;
     private static final byte PLACE_FOREGROUND = 2;
+    private static final String PARAMETER_PLACE_TAG = "place";
 
     public RuinTemplateRule(RuinTemplate r, String rule, boolean debug) {
         owner = r;
@@ -169,14 +171,18 @@ public class RuinTemplateRule {
         return bonemeal;
     }
 
-    private static final String PARAMETER_PLACE_TAG = "place";
-
-    // get Ruins place parameter: "background" (the old "?" prefix) only replaces blocks the ground search counts as
-    // ground, "foreground" (the old "!" prefix) only goes where the ground search looks through (air, plants, trees,
-    // water/lava kept by preserve_water/preserve_lava); any other value is left in place and reported as invalid
-    private static byte extractPlace(byte defaultValue, CompoundTag parameters) {
+    /**
+     * Gets the Ruins place parameter. "background" (the old "?" prefix) only replaces blocks the ground search counts
+     * as ground, "foreground" (the old "!" prefix) only goes where the ground search looks through (air, plants, trees,
+     * water/lava kept by preserve_water/preserve_lava). Any other value is left in place and reported as invalid.
+     *
+     * @param defaultValue place policy to use when the parameter is missing or invalid
+     * @param parameters   the block's Ruins parameters; a valid place parameter is removed from them
+     * @return PLACE_BACKGROUND, PLACE_FOREGROUND or defaultValue
+     */
+    private byte extractPlace(byte defaultValue, CompoundTag parameters) {
         byte place = defaultValue;
-        if (parameters.contains(PARAMETER_PLACE_TAG, 8)) {
+        if (parameters.contains(PARAMETER_PLACE_TAG, Tag.TAG_STRING)) {
             String value = parameters.getString(PARAMETER_PLACE_TAG);
             if (value.equals("background")) {
                 place = PLACE_BACKGROUND;
@@ -282,7 +288,9 @@ public class RuinTemplateRule {
         }
     }
 
-    // background blocks only replace ground, foreground blocks only go where the ground search looks through
+    /**
+     * Background blocks only replace ground, foreground blocks only go where the ground search looks through.
+     */
     private boolean placeAllowed(Level world, BlockPos pos, byte placePolicy) {
         if (placePolicy == PLACE_ANYWHERE) {
             return true;
@@ -291,7 +299,9 @@ public class RuinTemplateRule {
         return placePolicy == PLACE_BACKGROUND ? !lookedThrough : lookedThrough;
     }
 
-    // bedrock with an end crystal in the same spot, the same way the old "EnderCrystal" block placed it
+    /**
+     * Places bedrock with an end crystal in the same spot, the same way the old "EnderCrystal" block placed it.
+     */
     private void spawnEndCrystal(Level world, RandomSource random, BlockPos pos) {
         realizeBlock(world, pos, Blocks.BEDROCK.defaultBlockState(), null);
         EndCrystal crystal = new EndCrystal(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
