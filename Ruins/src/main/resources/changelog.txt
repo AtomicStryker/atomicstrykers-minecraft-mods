@@ -641,3 +641,9 @@ a: setAccessible now true
 1.20.1.4
 + merge PR https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/579 by Flankrat and Claude
 + fixes ruins chunk exploration causing chunk generation stops on the server thread
+
+1.20.1.5
++ merge PR https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/581 by Flankrat and Claude
++ introduces block tag "ruins:not_ground" feature which flags blocks that should be ignored by Ruins similar to vegetation
++ merge PR https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/582 by Flankrat and Claude
++ new Ruins parameter "place" allows for foreground and background block definitions which replace existing terrain or not
