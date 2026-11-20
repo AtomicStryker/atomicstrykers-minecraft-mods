@@ -4,8 +4,10 @@ package atomicstryker.ruins.common;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -34,6 +36,9 @@ public class RuinTemplate {
 
     private static final Pattern patternRuleRaw = Pattern.compile("(?:[^*=^]*\\*)?(?:rule[^=^]*)?[=^]");
     private static final Pattern patternRule = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?(rule[^=^]*)?([=^])(?:([1-9]\\d{0,4})\\*)?(.*)");
+    // blocks the ground search looks through like trees, for blocks that aren't tagged as leaves or logs
+    // (e.g. the solid shell around Dynamic Trees' thick trunks); data packs can add more
+    private static final TagKey<Block> NOT_GROUND = BlockTags.create(new ResourceLocation(RuinsMod.MOD_ID, "not_ground"));
     private static Set<String> installed_mods_ = null;
     private final String name;
     private final VariantRuleset variantRuleset;
@@ -113,7 +118,7 @@ public class RuinTemplate {
         }
         // trees are looked through like plants, so ruins are built on the ground under them, not on the treetops
         // (leaves and logs are solid blocks)
-        if (blockState.is(BlockTags.LEAVES) || blockState.is(BlockTags.LOGS)) {
+        if (blockState.is(BlockTags.LEAVES) || blockState.is(BlockTags.LOGS) || blockState.is(NOT_GROUND)) {
             return true;
         }
         return !blockState.isSolid();
