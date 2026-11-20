@@ -36,6 +36,9 @@ public class RuinTemplate {
 
     private static final Pattern patternRuleRaw = Pattern.compile("(?:[^*=^]*\\*)?(?:rule[^=^]*)?[=^]");
     private static final Pattern patternRule = Pattern.compile("(?:([1-9]\\d{0,4})\\*)?(rule[^=^]*)?([=^])(?:([1-9]\\d{0,4})\\*)?(.*)");
+    // blocks the ground search looks through like trees, for blocks that aren't tagged as leaves or logs
+    // (e.g. the solid shell around Dynamic Trees' thick trunks); data packs can add more
+    private static final TagKey<Block> NOT_GROUND = BlockTags.create(new ResourceLocation(RuinsMod.MOD_ID, "not_ground"));
     private static Set<String> installed_mods_ = null;
     private final String name;
     private final VariantRuleset variantRuleset;
@@ -102,10 +105,6 @@ public class RuinTemplate {
         return biomes;
     }
 
-
-    // blocks the ground search looks through like trees, for blocks that aren't tagged as leaves or logs
-    // (e.g. the solid shell around Dynamic Trees' thick trunks); data packs can add more
-    private static final TagKey<Block> NOT_GROUND = BlockTags.create(new ResourceLocation(RuinsMod.MOD_ID, "not_ground"));
 
     public boolean isIgnoredBlock(BlockState blockState) {
         // water and lava count as ground, so templates can accept or refuse them as a surface
