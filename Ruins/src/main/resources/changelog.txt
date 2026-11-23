@@ -685,3 +685,7 @@ a: setAccessible now true
 + introduces block tag "ruins:not_ground" feature which flags blocks that should be ignored by Ruins similar to vegetation
 + merge PR https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/582 by Flankrat and Claude
 + new Ruins parameter "place" allows for foreground and background block definitions which replace existing terrain or not
+
+26.3.5
++ merge PR https://github.com/AtomicStryker/atomicstrykers-minecraft-mods/pull/583 by Flankrat and Claude
++ fix template rotation breaking pistons, and maybe other blocks
