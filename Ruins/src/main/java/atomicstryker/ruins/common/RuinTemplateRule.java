@@ -275,8 +275,8 @@ public class RuinTemplateRule {
         }
         BlockState blockState = blockStates[blocknum];
         if (blockState != null) {
-            // use vanilla rotation - lets see how this goes
-            BlockState rotatedState = blockState.rotate(world, pos, getDirectionalRotation(rotate));
+            // plain vanilla rotation, the same call vanilla structure templates use
+            BlockState rotatedState = blockState.rotate(getDirectionalRotation(rotate));
             if (excessiveDebugging) {
                 RuinsMod.LOGGER.info("About to place blockstate {} at pos {}", rotatedState.toString(), pos.toString());
             }
